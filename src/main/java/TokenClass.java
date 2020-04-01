@@ -1,0 +1,63 @@
+enum TokenClass {
+    ID,
+    FUNCTIONID,
+    COMMA,
+    SEMICOLON,
+    POINT,
+    QUOTES,
+    // круглые скобки
+    LPARENTHESIS,
+    RPARENTHESIS,
+    // фигурные скобки
+    LBRACE,
+    RBRACE,
+    // квадратные скобки
+    LSQUAREBRACKET,
+    RSQUAREBRACKET,
+    // операции
+    OPERATOREQUALITY,
+    OPERATORINEQUALITY,
+    OPERATORASSIGNMENT,
+    OPERATORSUMMING,
+    OPERATORDIFFERENCE,
+    OPERATORMULTIPLICATION,
+    OPERATORDIVISION,
+    OPERATORMODULO,
+    OPERATORAND,
+    OPERATOROR,
+    OPERATORNOT,
+    OPERATORLESS,
+    OPERATORMORE,
+    // типы данных
+    INT,
+    FLOAT,
+    STRING,
+    // значения переменных
+    INTVARIABLE,
+    SINTVARIABLE,
+    FLOATVARIABLE,
+    ARRAY,
+    STRINGVARIABLE,
+    HEXVARIABLE,
+    OCTALVARIABLE,
+    BINARYVARIABLE,
+    // операторы
+    IN,
+    ROUND,
+    IF,
+    ELSE,
+    FOR,
+    WHILE,
+    // определение
+    MUTABLE,
+    COLON,
+    FUNCTIONDEFINITION,
+    VARIABLEDEFINITION,
+    //
+    MAIN,
+    RETURN,
+    FUNCTIONRETURN,
+    // макросы
+    ASSERTMACRO,
+    PRINTLNMACRO
+}
