@@ -1,1 +1,473 @@
-{"nodeType":"PROGRAM","lexeme":"program","children":[{"nodeType":"EXPRESSIONASSERTMACRO","lexeme":"expression__assert_macros","children":[{"nodeType":"ASSERTMACRO","lexeme":"assert!","children":null},{"nodeType":"LPARENTHESIS","lexeme":"(","children":null},{"nodeType":"SENTENCEASSERTPARAM","lexeme":"expression_assert_param","children":[{"nodeType":"OPERATOREQUALITY","lexeme":"==","children":[{"nodeType":"ID","lexeme":"n","children":null}]}]},{"nodeType":"SEMICOLON","lexeme":";","children":null}]},{"nodeType":"PHRASEFOR","lexeme":"expression_for","children":[{"nodeType":"FOR","lexeme":"for","children":null},{"nodeType":"CONDITIONFOR","lexeme":"expression_condition_for","children":[{"nodeType":"ID","lexeme":"index","children":null},{"nodeType":"CYCLE","lexeme":"expression_in","children":[{"nodeType":"IN","lexeme":"in","children":null},{"nodeType":"ROUND","lexeme":"..","children":null}]}]}]}]}
+{
+  "nodeType" : "PROGRAM",
+  "lexeme" : "program",
+  "children" : [ {
+    "nodeType" : "PHRASEMAINFUNCTIONDEFINITION",
+    "lexeme" : "expression_main_function_definition",
+    "children" : [ {
+      "nodeType" : "FUNCTIONDEFINITION",
+      "lexeme" : "fn",
+      "children" : null
+    }, {
+      "nodeType" : "FUNCTIONDECLARATION",
+      "lexeme" : "expression_function_declaration",
+      "children" : [ {
+        "nodeType" : "MAIN",
+        "lexeme" : "main",
+        "children" : null
+      }, {
+        "nodeType" : "LPARENTHESIS",
+        "lexeme" : "(",
+        "children" : null
+      }, {
+        "nodeType" : "SENTENCEE",
+        "lexeme" : "e",
+        "children" : null
+      }, {
+        "nodeType" : "RPARENTHESIS",
+        "lexeme" : ")",
+        "children" : null
+      } ]
+    }, {
+      "nodeType" : "LBRACE",
+      "lexeme" : "{",
+      "children" : null
+    }, {
+      "nodeType" : "BODY",
+      "lexeme" : "body",
+      "children" : [ {
+        "nodeType" : "EXPRESSIONVARIABLEDEFINITION",
+        "lexeme" : "expression_variable_definition",
+        "children" : [ {
+          "nodeType" : "VARIABLEDEFINITION",
+          "lexeme" : "let",
+          "children" : null
+        }, {
+          "nodeType" : "OPERATORASSIGNMENT",
+          "lexeme" : "=",
+          "children" : [ {
+            "nodeType" : "ID",
+            "lexeme" : "array",
+            "children" : null
+          }, {
+            "nodeType" : "ARRAY",
+            "lexeme" : "[1, 2, 3, 4, -34]",
+            "children" : null
+          } ]
+        }, {
+          "nodeType" : "SEMICOLON",
+          "lexeme" : ";",
+          "children" : null
+        } ]
+      }, {
+        "nodeType" : "EXPRESSIONVARIABLEDEFINITION",
+        "lexeme" : "expression_variable_definition",
+        "children" : [ {
+          "nodeType" : "VARIABLEDEFINITION",
+          "lexeme" : "let",
+          "children" : null
+        }, {
+          "nodeType" : "TYPEBINDING",
+          "lexeme" : "expression_type_binding",
+          "children" : [ {
+            "nodeType" : "ID",
+            "lexeme" : "min",
+            "children" : null
+          }, {
+            "nodeType" : "BINDING",
+            "lexeme" : "expression_binding",
+            "children" : [ {
+              "nodeType" : "COLON",
+              "lexeme" : ":",
+              "children" : null
+            }, {
+              "nodeType" : "OPERATORASSIGNMENT",
+              "lexeme" : "=",
+              "children" : [ {
+                "nodeType" : "INT",
+                "lexeme" : "i32",
+                "children" : null
+              }, {
+                "nodeType" : "FUNCTIONDECLARATION",
+                "lexeme" : "expression_function_declaration",
+                "children" : [ {
+                  "nodeType" : "FUNCTIONID",
+                  "lexeme" : "min",
+                  "children" : null
+                }, {
+                  "nodeType" : "LPARENTHESIS",
+                  "lexeme" : "(",
+                  "children" : null
+                }, {
+                  "nodeType" : "SENTENCEFUNCTIONPARAM",
+                  "lexeme" : "expression_function_param",
+                  "children" : [ {
+                    "nodeType" : "ID",
+                    "lexeme" : "array",
+                    "children" : null
+                  } ]
+                }, {
+                  "nodeType" : "RPARENTHESIS",
+                  "lexeme" : ")",
+                  "children" : null
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "nodeType" : "SEMICOLON",
+          "lexeme" : ";",
+          "children" : null
+        } ]
+      }, {
+        "nodeType" : "EXPRESSIONPRINTLNMACRO",
+        "lexeme" : "expression_println_macros",
+        "children" : [ {
+          "nodeType" : "PRINTLNMACRO",
+          "lexeme" : "println!",
+          "children" : null
+        }, {
+          "nodeType" : "LPARENTHESIS",
+          "lexeme" : "(",
+          "children" : null
+        }, {
+          "nodeType" : "SENTENCEPRINTLNPARAM",
+          "lexeme" : "expression_println_param",
+          "children" : [ {
+            "nodeType" : "STRINGVARIABLE",
+            "lexeme" : "\"{}\"",
+            "children" : null
+          }, {
+            "nodeType" : "COMMA",
+            "lexeme" : ",",
+            "children" : null
+          }, {
+            "nodeType" : "ID",
+            "lexeme" : "min",
+            "children" : null
+          } ]
+        }, {
+          "nodeType" : "RPARENTHESIS",
+          "lexeme" : ")",
+          "children" : null
+        }, {
+          "nodeType" : "SEMICOLON",
+          "lexeme" : ";",
+          "children" : null
+        } ]
+      } ]
+    }, {
+      "nodeType" : "RBRACE",
+      "lexeme" : "}",
+      "children" : null
+    } ]
+  }, {
+    "nodeType" : "PHRASEFUNCTIONDEFINITION",
+    "lexeme" : "expression_function_definition",
+    "children" : [ {
+      "nodeType" : "FUNCTIONDEFINITION",
+      "lexeme" : "fn",
+      "children" : null
+    }, {
+      "nodeType" : "FUNCTIONDECLARATION",
+      "lexeme" : "expression_function_declaration",
+      "children" : [ {
+        "nodeType" : "FUNCTIONID",
+        "lexeme" : "min",
+        "children" : null
+      }, {
+        "nodeType" : "LPARENTHESIS",
+        "lexeme" : "(",
+        "children" : null
+      }, {
+        "nodeType" : "SENTENCEFUNCTIONDEFINITIONPARAM",
+        "lexeme" : "expression_function_definition_param",
+        "children" : [ {
+          "nodeType" : "TYPEBINDING",
+          "lexeme" : "expression_type_binding",
+          "children" : [ {
+            "nodeType" : "ID",
+            "lexeme" : "array",
+            "children" : null
+          }, {
+            "nodeType" : "BINDING",
+            "lexeme" : "expression_binding",
+            "children" : [ {
+              "nodeType" : "COLON",
+              "lexeme" : ":",
+              "children" : null
+            }, {
+              "nodeType" : "LSQUAREBRACKET",
+              "lexeme" : "[",
+              "children" : null
+            }, {
+              "nodeType" : "ARRAYDECLARATION",
+              "lexeme" : "[",
+              "children" : [ {
+                "nodeType" : "INT",
+                "lexeme" : "i32",
+                "children" : null
+              }, {
+                "nodeType" : "SEMICOLON",
+                "lexeme" : ";",
+                "children" : null
+              }, {
+                "nodeType" : "INTVARIABLE",
+                "lexeme" : "5",
+                "children" : null
+              } ]
+            }, {
+              "nodeType" : "RSQUAREBRACKET",
+              "lexeme" : "]",
+              "children" : null
+            } ]
+          } ]
+        } ]
+      }, {
+        "nodeType" : "RPARENTHESIS",
+        "lexeme" : ")",
+        "children" : null
+      }, {
+        "nodeType" : "FUNCTIONRETURN",
+        "lexeme" : "->",
+        "children" : null
+      }, {
+        "nodeType" : "INT",
+        "lexeme" : "i32",
+        "children" : null
+      } ]
+    }, {
+      "nodeType" : "LBRACE",
+      "lexeme" : "{",
+      "children" : null
+    }, {
+      "nodeType" : "BODY",
+      "lexeme" : "body",
+      "children" : [ {
+        "nodeType" : "EXPRESSIONVARIABLEDEFINITION",
+        "lexeme" : "expression_variable_definition",
+        "children" : [ {
+          "nodeType" : "VARIABLEDEFINITION",
+          "lexeme" : "let",
+          "children" : null
+        }, {
+          "nodeType" : "MUTABLEDEFINITION",
+          "lexeme" : "expression_mutable_definition",
+          "children" : [ {
+            "nodeType" : "MUTABLE",
+            "lexeme" : "mut",
+            "children" : null
+          }, {
+            "nodeType" : "TYPEBINDING",
+            "lexeme" : "expression_type_binding",
+            "children" : [ {
+              "nodeType" : "ID",
+              "lexeme" : "min",
+              "children" : null
+            }, {
+              "nodeType" : "BINDING",
+              "lexeme" : "expression_binding",
+              "children" : [ {
+                "nodeType" : "COLON",
+                "lexeme" : ":",
+                "children" : null
+              }, {
+                "nodeType" : "OPERATORASSIGNMENT",
+                "lexeme" : "=",
+                "children" : [ {
+                  "nodeType" : "INT",
+                  "lexeme" : "i32",
+                  "children" : null
+                }, {
+                  "nodeType" : "ARRAYELEMENT",
+                  "lexeme" : "expression_array_element",
+                  "children" : [ {
+                    "nodeType" : "ID",
+                    "lexeme" : "array",
+                    "children" : null
+                  }, {
+                    "nodeType" : "LSQUAREBRACKET",
+                    "lexeme" : "[",
+                    "children" : null
+                  }, {
+                    "nodeType" : "ARRAYINDEX",
+                    "lexeme" : "[",
+                    "children" : [ {
+                      "nodeType" : "BINARYVARIABLE",
+                      "lexeme" : "0b0",
+                      "children" : null
+                    } ]
+                  }, {
+                    "nodeType" : "RSQUAREBRACKET",
+                    "lexeme" : "]",
+                    "children" : null
+                  } ]
+                } ]
+              } ]
+            } ]
+          } ]
+        }, {
+          "nodeType" : "SEMICOLON",
+          "lexeme" : ";",
+          "children" : null
+        } ]
+      }, {
+        "nodeType" : "PHRASEFOR",
+        "lexeme" : "expression_for",
+        "children" : [ {
+          "nodeType" : "FOR",
+          "lexeme" : "for",
+          "children" : null
+        }, {
+          "nodeType" : "CONDITIONFOR",
+          "lexeme" : "expression_condition_for",
+          "children" : [ {
+            "nodeType" : "ID",
+            "lexeme" : "index",
+            "children" : null
+          }, {
+            "nodeType" : "CYCLE",
+            "lexeme" : "expression_in",
+            "children" : [ {
+              "nodeType" : "IN",
+              "lexeme" : "in",
+              "children" : null
+            }, {
+              "nodeType" : "ROUND",
+              "lexeme" : "expression_round",
+              "children" : [ {
+                "nodeType" : "INTVARIABLE",
+                "lexeme" : "1",
+                "children" : null
+              }, {
+                "nodeType" : "INTVARIABLE",
+                "lexeme" : "5",
+                "children" : null
+              } ]
+            } ]
+          } ]
+        }, {
+          "nodeType" : "LBRACE",
+          "lexeme" : "{",
+          "children" : null
+        }, {
+          "nodeType" : "BODY",
+          "lexeme" : "body",
+          "children" : [ {
+            "nodeType" : "PHRASEIF",
+            "lexeme" : "expression_if",
+            "children" : [ {
+              "nodeType" : "IF",
+              "lexeme" : "if",
+              "children" : null
+            }, {
+              "nodeType" : "CONDITIONIF",
+              "lexeme" : "expression.condition_if",
+              "children" : [ {
+                "nodeType" : "ID",
+                "lexeme" : "min",
+                "children" : null
+              }, {
+                "nodeType" : "ARRAYELEMENT",
+                "lexeme" : "expression_array_element",
+                "children" : [ {
+                  "nodeType" : "ID",
+                  "lexeme" : "array",
+                  "children" : null
+                }, {
+                  "nodeType" : "LSQUAREBRACKET",
+                  "lexeme" : "[",
+                  "children" : null
+                }, {
+                  "nodeType" : "ARRAYINDEX",
+                  "lexeme" : "[",
+                  "children" : [ {
+                    "nodeType" : "LSQUAREBRACKET",
+                    "lexeme" : "index",
+                    "children" : null
+                  } ]
+                }, {
+                  "nodeType" : "RSQUAREBRACKET",
+                  "lexeme" : "]",
+                  "children" : null
+                } ]
+              } ]
+            }, {
+              "nodeType" : "LBRACE",
+              "lexeme" : "{",
+              "children" : null
+            }, {
+              "nodeType" : "BODY",
+              "lexeme" : "body",
+              "children" : [ {
+                "nodeType" : "EXPRESSIONASSIGNMENT",
+                "lexeme" : "expression_assignment",
+                "children" : [ {
+                  "nodeType" : "ID",
+                  "lexeme" : "min",
+                  "children" : null
+                }, {
+                  "nodeType" : "ARRAYELEMENT",
+                  "lexeme" : "expression_array_element",
+                  "children" : [ {
+                    "nodeType" : "ID",
+                    "lexeme" : "array",
+                    "children" : null
+                  }, {
+                    "nodeType" : "LSQUAREBRACKET",
+                    "lexeme" : "[",
+                    "children" : null
+                  }, {
+                    "nodeType" : "ARRAYINDEX",
+                    "lexeme" : "[",
+                    "children" : [ {
+                      "nodeType" : "LSQUAREBRACKET",
+                      "lexeme" : "index",
+                      "children" : null
+                    } ]
+                  }, {
+                    "nodeType" : "RSQUAREBRACKET",
+                    "lexeme" : "]",
+                    "children" : null
+                  } ]
+                }, {
+                  "nodeType" : "SEMICOLON",
+                  "lexeme" : ";",
+                  "children" : null
+                } ]
+              } ]
+            }, {
+              "nodeType" : "RBRACE",
+              "lexeme" : "}",
+              "children" : null
+            } ]
+          } ]
+        }, {
+          "nodeType" : "RBRACE",
+          "lexeme" : "}",
+          "children" : null
+        } ]
+      }, {
+        "nodeType" : "EXPRESSIONRETURN",
+        "lexeme" : "expression_return",
+        "children" : [ {
+          "nodeType" : "RETURN",
+          "lexeme" : "return",
+          "children" : null
+        }, {
+          "nodeType" : "ID",
+          "lexeme" : "min",
+          "children" : null
+        }, {
+          "nodeType" : "SEMICOLON",
+          "lexeme" : ";",
+          "children" : null
+        } ]
+      } ]
+    }, {
+      "nodeType" : "RBRACE",
+      "lexeme" : "}",
+      "children" : null
+    } ]
+  } ]
+}

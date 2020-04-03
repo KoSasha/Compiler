@@ -65,6 +65,8 @@ public class Token implements Lexer {
 
     public static Pattern patternIdLexeme = Pattern.compile("[a-zA-Z]+\\w*");
 
+    public static Pattern patternChar = Pattern.compile("chars\\(\\)\\.nth\\(");
+
     @Override
     public Token getNextToken(String string, Integer numberOfString, Integer position) {
         position += 1;
@@ -195,6 +197,11 @@ public class Token implements Lexer {
                     return new Token(TokenClass.FLOATVARIABLE, lexemeVar, numberOfString, position);
                 } else if ((lexemeVar = patternMatchingString(patternIntVariable, string, position)) != null) {
                     return new Token(TokenClass.INTVARIABLE, lexemeVar, numberOfString, position);
+                }
+
+            case 'c':
+                if (patternMatching(patternChar, string, position)) {
+                    return new Token(TokenClass.CHAR, "chars().nth", numberOfString, position);
                 }
 
             case 'i':

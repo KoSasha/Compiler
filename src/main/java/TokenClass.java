@@ -41,6 +41,7 @@ enum TokenClass {
     HEXVARIABLE,
     OCTALVARIABLE,
     BINARYVARIABLE,
+    CHAR,
     // операторы
     IN,
     ROUND,
