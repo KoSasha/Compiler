@@ -7,8 +7,9 @@ import java.util.ArrayList;
 
 @NoArgsConstructor@AllArgsConstructor
 @Setter@Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AST implements JSON {
-//    @JsonIgnore
+    @JsonIgnore
     private ASTNodeType nodeType;
 
     private String lexeme;
@@ -52,10 +53,12 @@ public class AST implements JSON {
 
     @Override
     public String toJSON(String address_to) throws IOException {
+
+
         ObjectMapper mapper = new ObjectMapper();
 //        mapper.writeValue(new File(address_to), this);
         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(address_to), this);
 //        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValue(););
-        return mapper.writeValueAsString(this);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
     }
 }

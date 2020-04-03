@@ -53,8 +53,6 @@ public class Application {
                         }
                         if (currentToken != null) {
                             nextToken = token;
-                            System.out.println(currentToken.getType());
-                            System.out.println(nextToken.getType());
                             String parserLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
                             if (parserLog != null) {
                                 System.out.println(parserLog);
@@ -78,50 +76,9 @@ public class Application {
             }
             numberOfString += 1;
         }
-        ast.toJSON("src/main/resources/ast.json");
-    }
-
-    public static void testAst(AST ast) {
-        if (ast != null) {
-
-            AST child1 = new AST();
-            AST child2 = new AST();
-
-            ast.setNodeType(ASTNodeType.ID);
-            ast.setLexeme("id");
-
-            child1.setNodeType(ASTNodeType.ARRAY);
-            child1.setLexeme("[1, 2, 3]");
-
-            child2.setNodeType(ASTNodeType.INT);
-            child2.setLexeme("i32");
-
-            ast.addByPath(child1,null);
-            ast.addByPath(child2,null);
-
-            AST child3 = new AST();
-            AST child4 = new AST();
-
-            child3.setNodeType(ASTNodeType.IF);
-            child3.setLexeme("if");
-
-            child4.setNodeType(ASTNodeType.INTVARIABLE);
-            child4.setLexeme("45");
-
-            ArrayList<Integer> path3 = new ArrayList<>();
-            ArrayList<Integer> path4 = new ArrayList<>();
-
-            path3.add(0);
-            path4.add(1);
-
-            ast.addByPath(child3, path3);
-            ast.addByPath(child4, path4);
-
-            System.out.println(ast.getChildren().get(0).getLexeme());
-            System.out.println(ast.getChildren().get(1).getLexeme());
-
-            System.out.println(ast.getChildren().get(0).getChildren().get(0).getLexeme());
-            System.out.println(ast.getChildren().get(1).getChildren().get(0).getLexeme());
+        String astJson = ast.toJSON("src/main/resources/ast.json");
+        if (option != null && option.equals("--dump-ast")) {
+            System.out.println(astJson);
         }
     }
 

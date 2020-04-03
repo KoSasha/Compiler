@@ -88,7 +88,6 @@ public class Parser {
                         newExprNode = new AST(ASTNodeType.SENTENCEE, "e", parentNode, null);
                         newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
                     } else if (parentNode.getNodeType() == ASTNodeType.POINTFUNCTION) {
-                        System.out.println(parentNode.getNodeType());
                         newExprNode = new AST(ASTNodeType.SENTENCEINDEX, "index", parentNode, null);
                         newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
                     } else {
@@ -234,7 +233,6 @@ public class Parser {
                             nextToken.getType() == TokenClass.VARIABLEDEFINITION) {
                         ArrayList<Integer> path = new ArrayList<>(pathToTokenParent);//pathToTokenParent;
                         boolean added = addAClosingTokenToTheAST(ast, parentNode, currentToken, "EXPRESSION", pathToTokenParent);
-                        System.out.println(parentNode.getNodeType().name());
                         if (!added) {
                             added = addAClosingTokenToTheAST(ast, parentNode, currentToken, "BODY", path);
                             if (!added) {
@@ -353,7 +351,6 @@ public class Parser {
                             parentNode.getNodeType() == ASTNodeType.OPERATOREQUALITY ||
                             parentNode.getNodeType() == ASTNodeType.OPERATORINEQUALITY ||
                             parentNode.getNodeType() == ASTNodeType.SENTENCEINDEX) {
-                        System.out.println(parentNode.getNodeType().name());
                         ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null), pathToTokenParent);
                     } else {
                         ArrayList<Integer> path = new ArrayList<>(pathToTokenParent);
@@ -418,7 +415,6 @@ public class Parser {
                             pathToTokenParent);
                 } else if (nextToken.getType() == TokenClass.SEMICOLON) {
                     if (parentNode.getNodeType() == ASTNodeType.ARRAYDECLARATION) {
-                        System.out.println(parentNode.getNodeType().name());
                         ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null),
                                 pathToTokenParent);
                     }
@@ -438,9 +434,8 @@ public class Parser {
                             parentNode.getNodeType() == ASTNodeType.OPERATORDIVISION ||
                             parentNode.getNodeType() == ASTNodeType.OPERATORMODULO ||
                             parentNode.getNodeType() == ASTNodeType.EXPRESSIONRETURN) {
-                        System.out.println(parentNode.getNodeType());
-                            newNode = new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null);
-                            parentNode.add(newNode);
+                        newNode = new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null);
+                        parentNode.add(newNode);
                     } else {
                         return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                                 ">: \"" + currentToken.getLexeme() + "\" одинокая переменная";
@@ -812,8 +807,6 @@ public class Parser {
         int size = pathToTokenParent.size();
         for (int i = size - 1; i >= 0; i--) {
             if (!parentNode.getNodeType().name().startsWith(startWith)) {
-                System.out.println(parentNode.getNodeType().name());
-                System.out.println(startWith);
                 parentNode = parentNode.getParent();
                 pathToTokenParent.remove(i);
             } else {
@@ -837,9 +830,8 @@ public class Parser {
                 pathToTokenParent.remove(i);
             } else {
                 newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode.getParent(), null);
-                if (startWith.equals("EXPRESSION")) { //|| startWith.equals("BODY")) {
+                if (startWith.equals("EXPRESSION")) {
                     ast.addByPath(newNode, pathToTokenParent);
-                    System.out.println(parentNode.getNodeType().name());
                     pathToTokenParent.remove(i);
                     return true;
                 }
