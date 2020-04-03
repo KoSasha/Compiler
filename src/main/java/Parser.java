@@ -475,11 +475,17 @@ public class Parser {
                         nextToken.getType() == TokenClass.OPERATORLESS) {
                     if (parentNode != null) {
                         if (parentNode.getNodeType() == ASTNodeType.PHRASEIF) {
-                            addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONIF, ASTNodeType.valueOf(currentToken.getType().name()),
-                                    "expression.condition_if", currentToken.getLexeme(), pathToTokenParent);
+                            addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONIF, ASTNodeType.valueOf(nextToken.getType().name()),
+                                    "expression_condition_if", nextToken.getLexeme(), pathToTokenParent);
+                            pathToTokenParent.add(0);
+                            parentNode = ast.searchByPath(pathToTokenParent);
+                            parentNode.add(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null));
                         } else if (parentNode.getNodeType() == ASTNodeType.PHRASEWHILE) {
-                            addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONWHILE, ASTNodeType.valueOf(currentToken.getType().name()),
-                                    "expression.condition_while", currentToken.getLexeme(), pathToTokenParent);
+                            addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONWHILE, ASTNodeType.valueOf(nextToken.getType().name()),
+                                    "expression_condition_while", nextToken.getLexeme(), pathToTokenParent);
+                            pathToTokenParent.add(0);
+                            parentNode = ast.searchByPath(pathToTokenParent);
+                            parentNode.add(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null));
                         } else if (parentNode.getNodeType() == ASTNodeType.SENTENCEASSERTPARAM) {
                             addANodeToTheAST(ast, parentNode, ASTNodeType.valueOf(nextToken.getType().name()), ASTNodeType.valueOf(currentToken.getType().name()),
                                     nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent);
@@ -550,6 +556,8 @@ public class Parser {
                                 "expression_array_element", currentToken.getLexeme(), pathToTokenParent);
                 } else if (nextToken.getType() == TokenClass.RSQUAREBRACKET) {
                     ast.addByPath(new AST(ASTNodeType.LSQUAREBRACKET, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                } else if (nextToken.getType() == TokenClass.LBRACE) {
+                    ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
                 } else {
                     return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" не у дел";

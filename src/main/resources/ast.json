@@ -26,23 +26,9 @@
         }, {
           "lexeme" : "=",
           "children" : [ {
-            "lexeme" : "s"
+            "lexeme" : "array"
           }, {
-            "lexeme" : "\"popampumoi\""
-          } ]
-        }, {
-          "lexeme" : ";"
-        } ]
-      }, {
-        "lexeme" : "expression_variable_definition",
-        "children" : [ {
-          "lexeme" : "let"
-        }, {
-          "lexeme" : "=",
-          "children" : [ {
-            "lexeme" : "subs"
-          }, {
-            "lexeme" : "\"ty\""
+            "lexeme" : "[1, 2, 3, 4, -34]"
           } ]
         }, {
           "lexeme" : ";"
@@ -54,7 +40,7 @@
         }, {
           "lexeme" : "expression_type_binding",
           "children" : [ {
-            "lexeme" : "n"
+            "lexeme" : "min"
           }, {
             "lexeme" : "expression_binding",
             "children" : [ {
@@ -66,17 +52,13 @@
               }, {
                 "lexeme" : "expression_function_declaration",
                 "children" : [ {
-                  "lexeme" : "search"
+                  "lexeme" : "min"
                 }, {
                   "lexeme" : "("
                 }, {
                   "lexeme" : "expression_function_param",
                   "children" : [ {
-                    "lexeme" : "s"
-                  }, {
-                    "lexeme" : ","
-                  }, {
-                    "lexeme" : "subs"
+                    "lexeme" : "array"
                   } ]
                 }, {
                   "lexeme" : ")"
@@ -100,7 +82,7 @@
           }, {
             "lexeme" : ","
           }, {
-            "lexeme" : "n"
+            "lexeme" : "min"
           } ]
         }, {
           "lexeme" : ")"
@@ -118,7 +100,7 @@
     }, {
       "lexeme" : "expression_function_declaration",
       "children" : [ {
-        "lexeme" : "search"
+        "lexeme" : "min"
       }, {
         "lexeme" : "("
       }, {
@@ -126,27 +108,24 @@
         "children" : [ {
           "lexeme" : "expression_type_binding",
           "children" : [ {
-            "lexeme" : "s"
+            "lexeme" : "array"
           }, {
             "lexeme" : "expression_binding",
             "children" : [ {
               "lexeme" : ":"
             }, {
-              "lexeme" : "&str"
-            } ]
-          } ]
-        }, {
-          "lexeme" : ","
-        }, {
-          "lexeme" : "expression_type_binding",
-          "children" : [ {
-            "lexeme" : "subs"
-          }, {
-            "lexeme" : "expression_binding",
-            "children" : [ {
-              "lexeme" : ":"
+              "lexeme" : "["
             }, {
-              "lexeme" : "&str"
+              "lexeme" : "[",
+              "children" : [ {
+                "lexeme" : "i32"
+              }, {
+                "lexeme" : ";"
+              }, {
+                "lexeme" : "5"
+              } ]
+            }, {
+              "lexeme" : "]"
             } ]
           } ]
         } ]
@@ -172,7 +151,7 @@
           }, {
             "lexeme" : "expression_type_binding",
             "children" : [ {
-              "lexeme" : "n"
+              "lexeme" : "min"
             }, {
               "lexeme" : "expression_binding",
               "children" : [ {
@@ -182,36 +161,19 @@
                 "children" : [ {
                   "lexeme" : "i32"
                 }, {
-                  "lexeme" : "-1"
-                } ]
-              } ]
-            } ]
-          } ]
-        }, {
-          "lexeme" : ";"
-        } ]
-      }, {
-        "lexeme" : "expression_variable_definition",
-        "children" : [ {
-          "lexeme" : "let"
-        }, {
-          "lexeme" : "expression_mutable_definition",
-          "children" : [ {
-            "lexeme" : "mut"
-          }, {
-            "lexeme" : "expression_type_binding",
-            "children" : [ {
-              "lexeme" : "i"
-            }, {
-              "lexeme" : "expression_binding",
-              "children" : [ {
-                "lexeme" : ":"
-              }, {
-                "lexeme" : "=",
-                "children" : [ {
-                  "lexeme" : "i32"
-                }, {
-                  "lexeme" : "0"
+                  "lexeme" : "expression_array_element",
+                  "children" : [ {
+                    "lexeme" : "array"
+                  }, {
+                    "lexeme" : "["
+                  }, {
+                    "lexeme" : "[",
+                    "children" : [ {
+                      "lexeme" : "0b0"
+                    } ]
+                  }, {
+                    "lexeme" : "]"
+                  } ]
                 } ]
               } ]
             } ]
@@ -224,24 +186,19 @@
         "children" : [ {
           "lexeme" : "for"
         }, {
-          "lexeme" : "expression_mutable_definition",
+          "lexeme" : "expression_condition_for",
           "children" : [ {
-            "lexeme" : "mut"
+            "lexeme" : "index"
           }, {
-            "lexeme" : "expression_condition_for",
+            "lexeme" : "expression_in",
             "children" : [ {
-              "lexeme" : "index"
+              "lexeme" : "in"
             }, {
-              "lexeme" : "expression_in",
+              "lexeme" : "expression_round",
               "children" : [ {
-                "lexeme" : "in"
+                "lexeme" : "1"
               }, {
-                "lexeme" : "expression_round",
-                "children" : [ {
-                  "lexeme" : "0"
-                }, {
-                  "lexeme" : "10"
-                } ]
+                "lexeme" : "5"
               } ]
             } ]
           } ]
@@ -250,23 +207,28 @@
         }, {
           "lexeme" : "body",
           "children" : [ {
-            "lexeme" : "expression_for",
+            "lexeme" : "expression_if",
             "children" : [ {
-              "lexeme" : "for"
+              "lexeme" : "if"
             }, {
-              "lexeme" : "expression_condition_for",
+              "lexeme" : "expression_condition_if",
               "children" : [ {
-                "lexeme" : "sindex"
-              }, {
-                "lexeme" : "expression_in",
+                "lexeme" : ">",
                 "children" : [ {
-                  "lexeme" : "in"
+                  "lexeme" : "min"
                 }, {
-                  "lexeme" : "expression_round",
+                  "lexeme" : "expression_array_element",
                   "children" : [ {
-                    "lexeme" : "0"
+                    "lexeme" : "array"
                   }, {
-                    "lexeme" : "2"
+                    "lexeme" : "["
+                  }, {
+                    "lexeme" : "[",
+                    "children" : [ {
+                      "lexeme" : "index"
+                    } ]
+                  }, {
+                    "lexeme" : "]"
                   } ]
                 } ]
               } ]
@@ -275,134 +237,29 @@
             }, {
               "lexeme" : "body",
               "children" : [ {
-                "lexeme" : "expression_if",
+                "lexeme" : "expression_assignment",
                 "children" : [ {
-                  "lexeme" : "if"
+                  "lexeme" : "min"
                 }, {
-                  "lexeme" : "expression_condition_if",
+                  "lexeme" : "expression_array_element",
                   "children" : [ {
-                    "lexeme" : "==",
-                    "children" : [ {
-                      "lexeme" : "s"
-                    }, {
-                      "lexeme" : "expression_point_function",
-                      "children" : [ {
-                        "lexeme" : "."
-                      }, {
-                        "lexeme" : "chars().nth"
-                      }, {
-                        "lexeme" : "("
-                      }, {
-                        "lexeme" : "index",
-                        "children" : [ {
-                          "lexeme" : "index"
-                        } ]
-                      }, {
-                        "lexeme" : ")"
-                      } ]
-                    }, {
-                      "lexeme" : "subs"
-                    }, {
-                      "lexeme" : "expression_point_function",
-                      "children" : [ {
-                        "lexeme" : "."
-                      }, {
-                        "lexeme" : "chars().nth"
-                      }, {
-                        "lexeme" : "("
-                      }, {
-                        "lexeme" : "index",
-                        "children" : [ {
-                          "lexeme" : "sindex"
-                        } ]
-                      }, {
-                        "lexeme" : ")"
-                      } ]
-                    } ]
-                  } ]
-                }, {
-                  "lexeme" : "{"
-                }, {
-                  "lexeme" : "body",
-                  "children" : [ {
-                    "lexeme" : "expression_assignment",
-                    "children" : [ {
-                      "lexeme" : "n"
-                    }, {
-                      "lexeme" : "i"
-                    }, {
-                      "lexeme" : ";"
-                    } ]
-                  } ]
-                }, {
-                  "lexeme" : "}"
-                } ]
-              }, {
-                "lexeme" : "expression_else",
-                "children" : [ {
-                  "lexeme" : "else"
-                }, {
-                  "lexeme" : "{"
-                }, {
-                  "lexeme" : "body",
-                  "children" : [ {
-                    "lexeme" : "expression_assignment",
+                    "lexeme" : "array"
+                  }, {
+                    "lexeme" : "["
+                  }, {
+                    "lexeme" : "[",
                     "children" : [ {
                       "lexeme" : "index"
-                    }, {
-                      "lexeme" : "+",
-                      "children" : [ {
-                        "lexeme" : "index"
-                      }, {
-                        "lexeme" : "1"
-                      } ]
-                    }, {
-                      "lexeme" : ";"
                     } ]
                   }, {
-                    "lexeme" : "expression_assignment",
-                    "children" : [ {
-                      "lexeme" : "i"
-                    }, {
-                      "lexeme" : "+",
-                      "children" : [ {
-                        "lexeme" : "i"
-                      }, {
-                        "lexeme" : "1"
-                      } ]
-                    }, {
-                      "lexeme" : ";"
-                    } ]
-                  }, {
-                    "lexeme" : "expression_assignment",
-                    "children" : [ {
-                      "lexeme" : "n"
-                    }, {
-                      "lexeme" : "-1"
-                    }, {
-                      "lexeme" : ";"
-                    } ]
+                    "lexeme" : "]"
                   } ]
                 }, {
-                  "lexeme" : "}"
+                  "lexeme" : ";"
                 } ]
               } ]
             }, {
               "lexeme" : "}"
-            } ]
-          }, {
-            "lexeme" : "expression_assignment",
-            "children" : [ {
-              "lexeme" : "i"
-            }, {
-              "lexeme" : "+",
-              "children" : [ {
-                "lexeme" : "i"
-              }, {
-                "lexeme" : "1"
-              } ]
-            }, {
-              "lexeme" : ";"
             } ]
           } ]
         }, {
@@ -413,7 +270,7 @@
         "children" : [ {
           "lexeme" : "return"
         }, {
-          "lexeme" : "n"
+          "lexeme" : "min"
         }, {
           "lexeme" : ";"
         } ]

@@ -53,12 +53,8 @@ public class AST implements JSON {
 
     @Override
     public String toJSON(String address_to) throws IOException {
-
-
         ObjectMapper mapper = new ObjectMapper();
-//        mapper.writeValue(new File(address_to), this);
         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(address_to), this);
-//        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValue(););
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
     }
 }

@@ -2,6 +2,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Scanner;
 
 public class Application {
@@ -80,6 +82,10 @@ public class Application {
         if (option != null && option.equals("--dump-ast")) {
             System.out.println(astJson);
         }
+        IdTable idTable = new IdTable(new IdentityHashMap<>(), 0, 'a');
+        idTable.formATable(ast);
+        idTable.toJSON("src/main/resources/idTable.json");
+        System.out.println(idTable.getIdTable().size());
     }
 
     public static void processingArguments(String[] args) throws CommandLineArgumentsException {
@@ -97,4 +103,5 @@ public class Application {
             }
         }
     }
+
 }
