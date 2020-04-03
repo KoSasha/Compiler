@@ -1,4 +1,3 @@
-import com.sun.jdi.IntegerType;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -155,7 +154,7 @@ public class Parser {
                             nextToken.getType() == TokenClass.OPERATORINEQUALITY ||
                             nextToken.getType() == TokenClass.OPERATORMORE ||
                             nextToken.getType() == TokenClass.OPERATORLESS) {
-                        if (parentNode.getParent().getNodeType() == ASTNodeType.POINTFUNCTION) {
+                        if (parentNode.getParent() != null && parentNode.getParent().getNodeType() == ASTNodeType.POINTFUNCTION) {
                             boolean added = addAClosingTokenToTheAST(ast, parentNode, currentToken, "SENTENCE", pathToTokenParent);
                             if (!added) {
                                 return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
