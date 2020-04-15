@@ -47,13 +47,9 @@ public class IdTable {
                     if (grandfather.getNodeType() == ASTNodeType.EXPRESSIONVARIABLEDEFINITION) {
                         addToIdTableFromExpressionVariableDefinition(ast, lvl);
                     } else if (grandfather.getNodeType() == ASTNodeType.MUTABLEDEFINITION) {
-                        if (ast.getParent().getNodeType() == ASTNodeType.CONDITIONFOR) {
-                            addToIdTable(ast, lvl);
-                        } else {
-                            addToIdTableFromExpressionVariableDefinition(ast, lvl);
-                        }
+                        addToIdTableFromMutableDefinition(ast, lvl, grandfather);
                     } else if (grandfather.getNodeType() == ASTNodeType.SENTENCEFUNCTIONDEFINITIONPARAM) {
-                        addToIdTableFromSentenceFunctionParam(ast, lvl);
+                        addToIdTableFromSentenceFunctionParam(ast, lvl, grandfather);
                     } else if (grandfather.getNodeType() == ASTNodeType.PHRASEMAINFUNCTIONDEFINITION ||
                             grandfather.getNodeType() == ASTNodeType.PHRASEFOR) {
                         addToIdTable(ast, lvl);
@@ -69,7 +65,7 @@ public class IdTable {
 
     public void addToIdTable(AST ast, String lvl) {
         idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT, ast.getNodeType(),
-                ast.getLexeme(), lvl));
+                ast.getLexeme(), lvl, null));
         this.idTable.put(ast.getLexeme(), lvl);
     }
 
@@ -82,14 +78,14 @@ public class IdTable {
                 if (cousin.getNodeType() == ASTNodeType.INT ||
                         cousin.getNodeType() == ASTNodeType.FLOAT) {
                     idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(),
-                            ast.getLexeme(), lvl));
+                            ast.getLexeme(), lvl, null));
                 } else if (cousin.getNodeType() == ASTNodeType.OPERATORASSIGNMENT) {
                     idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getChildren().get(0).getNodeType(),
-                            ast.getNodeType(), ast.getLexeme(), lvl));
+                            ast.getNodeType(), ast.getLexeme(), lvl, null));
                 }
             } else if (sibling.getNodeType() == ASTNodeType.STRINGVARIABLE) {
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.STRING,
-                        ast.getNodeType(), ast.getLexeme(), lvl));
+                        ast.getNodeType(), ast.getLexeme(), lvl, null));
             } else if (sibling.getNodeType() == ASTNodeType.SINTVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.INTVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.HEXVARIABLE ||
@@ -97,30 +93,41 @@ public class IdTable {
                     sibling.getNodeType() == ASTNodeType.BINARYVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.ID) {
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT,
-                        ast.getNodeType(), ast.getLexeme(), lvl));
+                        ast.getNodeType(), ast.getLexeme(), lvl, null));
             } else if (sibling.getNodeType() == ASTNodeType.FLOATVARIABLE) {
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.FLOAT,
-                        ast.getNodeType(), ast.getLexeme(), lvl));
+                        ast.getNodeType(), ast.getLexeme(), lvl, null));
             } else if (sibling.getNodeType() == ASTNodeType.ARRAY) {
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT,
-                        ASTNodeType.ARRAY, ast.getLexeme(), lvl));
+                        ASTNodeType.ARRAY, ast.getLexeme(), lvl, null));
             }
             this.idTable.put(ast.getLexeme(), lvl);
         }
     }
 
-    public void addToIdTableFromSentenceFunctionParam(AST ast, String lvl) {
+    public void addToIdTableFromSentenceFunctionParam(AST ast, String lvl, AST grandfather) {
         AST sibling, cousin;
         sibling = ast.getParent().getChildren().get(1);
         cousin = sibling.getChildren().get(1);
+        String functionName = grandfather.getParent().getChildren().get(0).getLexeme();
+        System.out.println(functionName);
+        IdDeclarationDescription param = null;
         if (cousin.getNodeType() == ASTNodeType.STRING ||
                 cousin.getNodeType() == ASTNodeType.INT ||
                 cousin.getNodeType() == ASTNodeType.FLOAT) {
-            idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getNodeType(),
-                    ast.getNodeType(), ast.getLexeme(), lvl));
+            param = new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(), ast.getLexeme(), lvl, null);
+            this.idDeclarationDescriptions.add(param);
         } else if (cousin.getNodeType() == ASTNodeType.LSQUAREBRACKET) {
-            idDeclarationDescriptions.add(new IdDeclarationDescription(sibling.getChildren().get(2).getChildren().get(0).getNodeType(),
-                    ASTNodeType.ARRAY, ast.getLexeme(), lvl));
+            param = new IdDeclarationDescription(sibling.getChildren().get(2).getChildren().get(0).getNodeType(),
+                    ASTNodeType.ARRAY, ast.getLexeme(), lvl, null);
+            this.idDeclarationDescriptions.add(param);
+        }
+        for (IdDeclarationDescription idDeclarationDescription: this.idDeclarationDescriptions) {
+            if (idDeclarationDescription.getType() == ASTNodeType.FUNCTIONID &&
+                    idDeclarationDescription.getLexeme().equals(functionName)) {
+                idDeclarationDescription.getFunctionParam().add(param);
+                break;
+            }
         }
         this.idTable.put(ast.getLexeme(), lvl);
     }
@@ -129,8 +136,18 @@ public class IdTable {
         int size = ast.getParent().getChildren().size();
         AST sibling =  ast.getParent().getChildren().get(size - 1);
         idDeclarationDescriptions.add(new IdDeclarationDescription(sibling.getNodeType(), ast.getNodeType(),
-                ast.getLexeme(), lvl));
+                ast.getLexeme(), lvl, new ArrayList<>()));
         this.idTable.put(ast.getLexeme(), lvl);
+    }
+
+    public void addToIdTableFromMutableDefinition(AST ast, String lvl, AST grandfather) {
+        if (ast.getParent().getNodeType() == ASTNodeType.CONDITIONFOR) {
+            addToIdTable(ast, lvl);
+        } else if (grandfather.getParent().getNodeType() == ASTNodeType.SENTENCEFUNCTIONDEFINITIONPARAM) {
+            addToIdTableFromSentenceFunctionParam(ast, lvl, grandfather.getParent());
+        } else {
+            addToIdTableFromExpressionVariableDefinition(ast, lvl);
+        }
     }
 
     public String toJSON(String address_to) throws IOException {
