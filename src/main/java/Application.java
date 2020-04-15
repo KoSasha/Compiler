@@ -82,7 +82,7 @@ public class Application {
         if (option != null && option.equals("--dump-ast")) {
             System.out.println(astJson);
         }
-        IdTable idTable = new IdTable(new IdentityHashMap<>(), 0, 'a');
+        IdTable idTable = new IdTable(new IdentityHashMap<>(), 0, 'a', new ArrayList<>());
         idTable.formATable(ast);
         idTable.toJSON("src/main/resources/idTable.json");
         System.out.println(idTable.getIdTable().size());
