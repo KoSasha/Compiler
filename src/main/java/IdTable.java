@@ -61,29 +61,36 @@ public class IdTable {
         }
     }
 
-
-
     public void addToIdTable(AST ast, String lvl) {
         idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT, ast.getNodeType(),
                 ast.getLexeme(), lvl, null));
         this.idTable.put(ast.getLexeme(), lvl);
+        addDescriptionNode(ast, "i32", ASTNodeType.INT);
     }
 
     public void addToIdTableFromExpressionVariableDefinition(AST ast, String lvl) {
         AST sibling, cousin;
+        ASTNodeType declarationType = null;
         sibling = ast.getParent().getChildren().get(1);
+        String descriptionLexeme = null;
         if (sibling.getLexeme() != ast.getLexeme()) {
             if (sibling.getNodeType() == ASTNodeType.BINDING) {
                 cousin = sibling.getChildren().get(1);
                 if (cousin.getNodeType() == ASTNodeType.INT ||
                         cousin.getNodeType() == ASTNodeType.FLOAT) {
+                    descriptionLexeme = cousin.getLexeme();
+                    declarationType = cousin.getNodeType();
                     idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(),
                             ast.getLexeme(), lvl, null));
                 } else if (cousin.getNodeType() == ASTNodeType.OPERATORASSIGNMENT) {
+                    descriptionLexeme = cousin.getChildren().get(0).getLexeme();
+                    declarationType = cousin.getChildren().get(0).getNodeType();
                     idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getChildren().get(0).getNodeType(),
                             ast.getNodeType(), ast.getLexeme(), lvl, null));
                 }
             } else if (sibling.getNodeType() == ASTNodeType.STRINGVARIABLE) {
+                descriptionLexeme = "&str";
+                declarationType = ASTNodeType.STRING;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.STRING,
                         ast.getNodeType(), ast.getLexeme(), lvl, null));
             } else if (sibling.getNodeType() == ASTNodeType.SINTVARIABLE ||
@@ -92,32 +99,44 @@ public class IdTable {
                     sibling.getNodeType() == ASTNodeType.OCTALVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.BINARYVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.ID) {
+                descriptionLexeme = "i32";
+                declarationType = ASTNodeType.INT;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT,
                         ast.getNodeType(), ast.getLexeme(), lvl, null));
             } else if (sibling.getNodeType() == ASTNodeType.FLOATVARIABLE) {
+                descriptionLexeme = "f64";
+                declarationType = ASTNodeType.FLOAT;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.FLOAT,
                         ast.getNodeType(), ast.getLexeme(), lvl, null));
             } else if (sibling.getNodeType() == ASTNodeType.ARRAY) {
+                descriptionLexeme = "i32";
+                declarationType = ASTNodeType.INT;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT,
                         ASTNodeType.ARRAY, ast.getLexeme(), lvl, null));
             }
             this.idTable.put(ast.getLexeme(), lvl);
+            addDescriptionNode(ast, descriptionLexeme, declarationType);
         }
     }
 
     public void addToIdTableFromSentenceFunctionParam(AST ast, String lvl, AST grandfather) {
         AST sibling, cousin;
+        ASTNodeType declarationType = null;
+        String descriptionLexeme = null;
         sibling = ast.getParent().getChildren().get(1);
         cousin = sibling.getChildren().get(1);
         String functionName = grandfather.getParent().getChildren().get(0).getLexeme();
-        System.out.println(functionName);
         IdDeclarationDescription param = null;
         if (cousin.getNodeType() == ASTNodeType.STRING ||
                 cousin.getNodeType() == ASTNodeType.INT ||
                 cousin.getNodeType() == ASTNodeType.FLOAT) {
+            descriptionLexeme = cousin.getLexeme();
+            declarationType = cousin.getNodeType();
             param = new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(), ast.getLexeme(), lvl, null);
             this.idDeclarationDescriptions.add(param);
         } else if (cousin.getNodeType() == ASTNodeType.LSQUAREBRACKET) {
+            descriptionLexeme = sibling.getChildren().get(2).getChildren().get(0).getLexeme();
+            declarationType = sibling.getChildren().get(2).getChildren().get(0).getNodeType();
             param = new IdDeclarationDescription(sibling.getChildren().get(2).getChildren().get(0).getNodeType(),
                     ASTNodeType.ARRAY, ast.getLexeme(), lvl, null);
             this.idDeclarationDescriptions.add(param);
@@ -130,6 +149,7 @@ public class IdTable {
             }
         }
         this.idTable.put(ast.getLexeme(), lvl);
+        addDescriptionNode(ast, descriptionLexeme, declarationType);
     }
 
     public void addToIdTableFromPhraseFunctionDefinition(AST ast, String lvl) {
@@ -138,6 +158,7 @@ public class IdTable {
         idDeclarationDescriptions.add(new IdDeclarationDescription(sibling.getNodeType(), ast.getNodeType(),
                 ast.getLexeme(), lvl, new ArrayList<>()));
         this.idTable.put(ast.getLexeme(), lvl);
+        addDescriptionNode(ast, sibling.getLexeme(), sibling.getNodeType());
     }
 
     public void addToIdTableFromMutableDefinition(AST ast, String lvl, AST grandfather) {
@@ -148,6 +169,16 @@ public class IdTable {
         } else {
             addToIdTableFromExpressionVariableDefinition(ast, lvl);
         }
+    }
+
+    public void addDescriptionNode(AST ast, String descriptionLexeme, ASTNodeType definitionType) {
+        String declarationNodeType = "DESCRIPTION" + definitionType.name();
+        ASTNodeType declarationType = ASTNodeType.valueOf(declarationNodeType);
+        AST idNode = new AST(ast.getNodeType(), ast.getLexeme(), ast, null);
+        ast.setNodeType(declarationType);
+        ast.setLexeme(descriptionLexeme);
+        ast.setChildren(new ArrayList<>());
+        ast.getChildren().add(idNode);
     }
 
     public String toJSON(String address_to) throws IOException {
