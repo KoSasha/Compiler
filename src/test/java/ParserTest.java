@@ -13,7 +13,7 @@ public class ParserTest {
         Token nextToken = new Token(TokenClass.FUNCTIONID, "pam", 1, 4);
 
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program",1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
@@ -29,7 +29,7 @@ public class ParserTest {
         Token nextToken = new Token(TokenClass.ID, "pam", 1, 4);
 
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
@@ -45,7 +45,7 @@ public class ParserTest {
         Token nextToken = new Token(TokenClass.LPARENTHESIS, "(", 1, 2);
 
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
@@ -58,13 +58,13 @@ public class ParserTest {
         String actualLog = null;
 
         Token currentToken = new Token(TokenClass.FUNCTIONID, "pam", 1, 1);
-        Token nextToken = new Token(TokenClass.COMMA, ",", 1, 2);
+        Token nextToken = new Token(TokenClass.ROUND, "..", 1, 2);
 
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
-
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
+        System.out.println(nextToken.getType());
         Assert.assertEquals(expextedLog, actualLog.substring(0, 5));
     }
 
@@ -78,8 +78,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.FUNCTIONDECLARATION, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.FUNCTIONDECLARATION, "program", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -98,8 +98,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.FUNCTIONDECLARATION, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.FUNCTIONDECLARATION, "program", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -118,7 +118,7 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
         Assert.assertEquals(expextedLog, actualLog);
@@ -134,7 +134,7 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
         Assert.assertEquals(expextedLog, actualLog);
@@ -150,7 +150,7 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
         Assert.assertEquals(expextedLog, actualLog);
@@ -166,8 +166,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.PHRASEFOR, "expression_for", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.PHRASEFOR, "expression_for", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -186,8 +186,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.CONDITIONFOR, "expression_for", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.CONDITIONFOR, "expression_for", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -206,8 +206,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.PHRASEIF, "expression_if", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.PHRASEIF, "expression_if", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -226,8 +226,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.PHRASEIF, "expression_if", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.PHRASEIF, "expression_if", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -246,8 +246,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.CONDITIONIF, "expression_comdition_if", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.CONDITIONIF, "expression_comdition_if", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -266,7 +266,7 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
 
         actualLog = parser.parser(currentToken, nextToken, ast, pathToTokenParent);
         Assert.assertEquals(expextedLog, actualLog);
@@ -282,8 +282,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.EXPRESSIONPRINTLNMACRO, "expression_println_macros", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.EXPRESSIONPRINTLNMACRO, "expression_println_macros", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);
@@ -302,8 +302,8 @@ public class ParserTest {
 
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Parser parser = new Parser();
-        AST ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
-        AST parentNode = new AST(ASTNodeType.SENTENCEFUNCTIONPARAM, "expression_function_param", null, null);
+        AST ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
+        AST parentNode = new AST(ASTNodeType.SENTENCEFUNCTIONPARAM, "expression_function_param", 1, null, null);
 
         ast.add(parentNode);
         pathToTokenParent.add(0);

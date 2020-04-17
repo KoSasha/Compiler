@@ -13,6 +13,8 @@ public class Application {
 
     public static Parser parser;
 
+    public static Sema semanticAnalysis;
+
     public static Token currentToken;
 
     public static Token nextToken;
@@ -38,7 +40,7 @@ public class Application {
 
     public static void compiler(Scanner in) throws IOException {
         parser = new Parser();
-        ast = new AST(ASTNodeType.PROGRAM, "program", null, null);
+        ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
         Integer numberOfString = 1, position;
         while (in.hasNextLine()) {
@@ -82,9 +84,16 @@ public class Application {
         if (option != null && option.equals("--dump-ast")) {
             System.out.println(astJson);
         }
-        IdTable idTable = new IdTable(new IdentityHashMap<>(), 0, 'a');
+        IdTable idTable = new IdTable(new IdentityHashMap<>(), 0, 'a', new ArrayList<>());
         idTable.formATable(ast);
         idTable.toJSON("src/main/resources/idTable.json");
+        semanticAnalysis = new Sema(0, 'a');
+        String semaLog = semanticAnalysis.analyze(ast, idTable);
+        if (semaLog != null) {
+            System.out.println(semaLog);
+            System.exit(0);
+        }
+        String annotatedAstJson = ast.toJSON("src/main/resources/annotatedast.json");
         System.out.println(idTable.getIdTable().size());
     }
 
