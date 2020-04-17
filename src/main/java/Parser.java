@@ -15,37 +15,28 @@ public class Parser {
         }
         switch (currentToken.getType()) {
             case COLON:
-                checkTheConsistencyOfTheGrammarStartingWithColon(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithColon(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case LBRACE:
-                checkTheConsistencyOfTheGrammarStartingWithLbrace(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithLbrace(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case LPARENTHESIS:
-                checkTheConsistencyOfTheGrammarStartingWithLparenthesis(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithLparenthesis(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case LSQUAREBRACKET:
-                checkTheConsistencyOfTheGrammarStartingWithLsquarebracket(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithLsquarebracket(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case RBRACE:
-                checkTheConsistencyOfTheGrammarStartingWithRbrace(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithRbrace(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case RPARENTHESIS:
-                checkTheConsistencyOfTheGrammarStartingWithRparenthesis(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithRparenthesis(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case RSQUAREBRACKET:
-                checkTheConsistencyOfTheGrammarStartingWithRsquarebracket(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithRsquarebracket(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case SEMICOLON:
-                checkTheConsistencyOfTheGrammarStartingWithSemicolon(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
-
+                return checkTheConsistencyOfTheGrammarStartingWithSemicolon(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case OPERATORSUMMING:
             case OPERATORDIFFERENCE:
@@ -56,8 +47,7 @@ public class Parser {
             case OPERATORMODULO:
             case OPERATOREQUALITY:
             case OPERATORINEQUALITY:
-                checkTheConsistencyOfTheGrammarStartingWithOperator(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithOperator(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case OPERATORASSIGNMENT:
                 if (nextToken.getType() == TokenClass.INTVARIABLE ||
@@ -79,95 +69,73 @@ public class Parser {
             case HEXVARIABLE:
             case OCTALVARIABLE:
             case BINARYVARIABLE:
-                checkTheConsistencyOfTheGrammarStartingWithVariable(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithVariable(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case STRINGVARIABLE:
             case ARRAY:
-                checkTheConsistencyOfTheGrammarStartingWithStringVariableOrArray(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithStringVariableOrArray(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case STRING:
-                checkTheConsistencyOfTheGrammarStartingWithString(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithString(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case INT:
             case FLOAT:
-                checkTheConsistencyOfTheGrammarStartingWithType(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithType(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case ID:
-                checkTheConsistencyOfTheGrammarStartingWithId(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithId(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case COMMA:
-                checkTheConsistencyOfTheGrammarStartingWithComma(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithComma(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case POINT:
-                checkTheConsistencyOfTheGrammarStartingWithPoint(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithPoint(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case CHAR:
-                checkTheConsistencyOfTheGrammarStartingWithChar(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithChar(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case ROUND:
-                checkTheConsistencyOfTheGrammarStartingWithRound(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithRound(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case IN:
-                checkTheConsistencyOfTheGrammarStartingWithIn(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithIn(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case IF:
-                checkTheConsistencyOfTheGrammarStartingWithIf(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithIf(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case ELSE:
-                checkTheConsistencyOfTheGrammarStartingWithElse(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithElse(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case FOR:
-                checkTheConsistencyOfTheGrammarStartingWithFor(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithFor(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case WHILE:
-                checkTheConsistencyOfTheGrammarStartingWithWhile(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithWhile(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case VARIABLEDEFINITION:
-                checkTheConsistencyOfTheGrammarStartingWithVariableDefinition(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithVariableDefinition(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case ASSERTMACRO:
-                checkTheConsistencyOfTheGrammarStartingWithAssertMacro(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithAssertMacro(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case PRINTLNMACRO:
-                checkTheConsistencyOfTheGrammarStartingWithPrintlnMacro(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithPrintlnMacro(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case MUTABLE:
-                checkTheConsistencyOfTheGrammarStartingWithMutable(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithMutable(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case FUNCTIONID:
             case MAIN:
-                checkTheConsistencyOfTheGrammarStartingWithFunctionId(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithFunctionId(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case FUNCTIONDEFINITION:
-                checkTheConsistencyOfTheGrammarStartingWithFunctionDefinition(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithFunctionDefinition(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case FUNCTIONRETURN:
-                checkTheConsistencyOfTheGrammarStartingWithFunctionReturn(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithFunctionReturn(nextToken, currentToken, ast, parentNode, pathToTokenParent);
 
             case RETURN:
-                checkTheConsistencyOfTheGrammarStartingWithReturn(nextToken, currentToken, ast, parentNode, pathToTokenParent);
-                break;
+                return checkTheConsistencyOfTheGrammarStartingWithReturn(nextToken, currentToken, ast, parentNode, pathToTokenParent);
         }
         return null;
     }
@@ -943,11 +911,11 @@ public class Parser {
         if (nextToken.getType() == TokenClass.LPARENTHESIS) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.FUNCTIONDECLARATION, ASTNodeType.valueOf(currentToken.getType().name()),
                     "expression_function_declaration", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
+            return null;
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается \"(\"";
         }
-        return null;
     }
 
     public String checkTheConsistencyOfTheGrammarStartingWithFunctionDefinition(Token nextToken, Token currentToken, AST ast,

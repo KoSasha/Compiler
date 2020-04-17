@@ -11,7 +11,7 @@ public class Sema {
 
     public String analyze(AST ast, IdTable idTable) {
         if (ast != null) {
-            String lvl;
+            String lvl, log;
             if (ast.getChildren() != null) {
                 for (AST astChild : ast.getChildren()) {
                     analyze(astChild, idTable);
@@ -29,9 +29,19 @@ public class Sema {
             } else if (ast.getNodeType() == ASTNodeType.RBRACE) {
                 this.setLevel(this.getLevel() - 1);
             } else if (ast.getNodeType() == ASTNodeType.ID) {
-                return this.idAnalyze(ast, idTable);
+                log = this.idAnalyze(ast, idTable);
+                if (log != null) {
+                    System.out.println(log);
+                    System.exit(0);
+                }
+                return log;
             } else if (ast.getNodeType() == ASTNodeType.FUNCTIONID) {
-                return this.functionIdAnalyze(ast, idTable);
+                log = this.functionIdAnalyze(ast, idTable);
+                if (log != null) {
+                    System.out.println(log);
+                    System.exit(0);
+                }
+                return log;
             } else if (ast.getNodeType() == ASTNodeType.INTVARIABLE ||
                     ast.getNodeType() == ASTNodeType.SINTVARIABLE ||
                     ast.getNodeType() == ASTNodeType.HEXVARIABLE ||
@@ -40,7 +50,12 @@ public class Sema {
                     ast.getNodeType() == ASTNodeType.FLOATVARIABLE ||
                     ast.getNodeType() == ASTNodeType.STRINGVARIABLE ||
                     ast.getNodeType() == ASTNodeType.ARRAY) {
-                return this.functionNumericalVariableAnalyze(ast, idTable);
+                log = this.functionNumericalVariableAnalyze(ast, idTable);
+                if (log != null) {
+                    System.out.println(log);
+                    System.exit(0);
+                }
+                return log;
             }
         }
         return null;
@@ -60,7 +75,6 @@ public class Sema {
                 String subLv = description.getLevel().substring(1, 2);
                 if (Integer.parseInt(lv) <= this.getLevel() &&
                         Character.getNumericValue(this.getSubLevel()) <= Character.getNumericValue(subLv.charAt(0))) {
-                    System.out.println(ast.getLexeme());
                     String descriptionLexeme = null;
                     if (description.getDataType() == ASTNodeType.INT) {
                         descriptionLexeme = "i32";
@@ -89,14 +103,14 @@ public class Sema {
                 }
             }
         }
-        return null;
+        return "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: переменная '" + ast.getLexeme() + "' не была объявлена";
     }
 
     public String checkTheTypeOfTheOperand(AST ast, IdDeclarationDescription description, String descriptionLexeme) {
         String declarationNodeType = "DESCRIPTION" + description.getDataType().name();
         ASTNodeType declarationType = ASTNodeType.valueOf(declarationNodeType);
         if (ast.getParent().getChildren().get(0).equals(ast)) {
-            if (ast.getParent().getParent().getNodeType() == ASTNodeType.EXPRESSIONASSIGNMENT) {
+            if (ast.getParent().getParent() != null && ast.getParent().getParent().getNodeType() == ASTNodeType.EXPRESSIONASSIGNMENT) {
 
                 if (ast.getParent().getParent().getChildren().get(0).getNodeType() == declarationType) {
 
@@ -216,17 +230,16 @@ public class Sema {
                         descriptionLexeme = "&str";
                     }
                     if (ast.getParent().getParent().getChildren().get(0).getNodeType() == description.getDataType()) {
-
-                        checkTheParametersForCorrectness(ast, description, descriptionLexeme, idTable);
+                        return checkTheParametersForCorrectness(ast, description, descriptionLexeme, idTable);
                     } else {
                         return "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: '" + ast.getLexeme() +
                                 "' тип возвращаемого функцией значения не соответствует переменной присваивания";
                     }
-                    return null;
                 }
             }
         }
-        return null;
+        return "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: '" + ast.getLexeme() +
+                "' функция не была объявлена";
     }
 
     public String checkTheParametersForCorrectness(AST ast, IdDeclarationDescription description, String descriptionLexeme, IdTable idTable) {
@@ -270,7 +283,16 @@ public class Sema {
                 if (Integer.parseInt(lv) <= this.getLevel() &&
                         Character.getNumericValue(this.getSubLevel()) <= Character.getNumericValue(subLv.charAt(0))) {
                     if (param.getDataType() == descriptionParam.getDataType()) {
-                        addDescriptionNode(ast, descriptionLexeme, descriptionParam.getDataType());
+//                        System.out.println(descriptionLexeme);
+                        String paramTypeLexeme = null;
+                        if (descriptionParam.getDataType() == ASTNodeType.INT) {
+                            paramTypeLexeme = "i32";
+                        } else if (descriptionParam.getDataType() == ASTNodeType.FLOAT) {
+                            paramTypeLexeme = "f64";
+                        } else if (descriptionParam.getDataType() == ASTNodeType.STRING) {
+                            paramTypeLexeme = "&str";
+                        }
+                        addDescriptionNode(ast, paramTypeLexeme, descriptionParam.getDataType());
                         return null;
                     } else {
                         return "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: тип передаваемого параметра функции '" + ast.getLexeme() +
