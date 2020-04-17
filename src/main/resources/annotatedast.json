@@ -135,7 +135,7 @@
                   "lexeme" : "expression_function_param",
                   "children" : [ {
                     "nodeType" : "DESCRIPTIONSTRING",
-                    "lexeme" : "i32",
+                    "lexeme" : "&str",
                     "children" : [ {
                       "nodeType" : "ID",
                       "lexeme" : "s"
@@ -145,7 +145,7 @@
                     "lexeme" : ","
                   }, {
                     "nodeType" : "DESCRIPTIONSTRING",
-                    "lexeme" : "i32",
+                    "lexeme" : "&str",
                     "children" : [ {
                       "nodeType" : "ID",
                       "lexeme" : "subs"
