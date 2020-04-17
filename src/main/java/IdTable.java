@@ -16,7 +16,7 @@ public class IdTable {
     @JsonIgnore
     private Character subLevel;
 
-    @JsonIgnore
+//    @JsonIgnore
     private ArrayList<IdDeclarationDescription> idDeclarationDescriptions;
 
     public void formATable(AST ast) {
@@ -125,7 +125,7 @@ public class IdTable {
         String descriptionLexeme = null;
         sibling = ast.getParent().getChildren().get(1);
         cousin = sibling.getChildren().get(1);
-        String functionName = grandfather.getParent().getChildren().get(0).getLexeme();
+        String functionName = grandfather.getParent().getChildren().get(0).getChildren().get(0).getLexeme();
         IdDeclarationDescription param = null;
         if (cousin.getNodeType() == ASTNodeType.STRING ||
                 cousin.getNodeType() == ASTNodeType.INT ||
@@ -174,7 +174,7 @@ public class IdTable {
     public void addDescriptionNode(AST ast, String descriptionLexeme, ASTNodeType definitionType) {
         String declarationNodeType = "DESCRIPTION" + definitionType.name();
         ASTNodeType declarationType = ASTNodeType.valueOf(declarationNodeType);
-        AST idNode = new AST(ast.getNodeType(), ast.getLexeme(), ast, null);
+        AST idNode = new AST(ast.getNodeType(), ast.getLexeme(), ast.getLine(), ast, null);
         ast.setNodeType(declarationType);
         ast.setLexeme(descriptionLexeme);
         ast.setChildren(new ArrayList<>());

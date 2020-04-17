@@ -15,6 +15,9 @@ public class AST implements JSON {
     private String lexeme;
 
     @JsonIgnore
+    private Integer line;
+
+    @JsonIgnore
     private AST parent;
 
     private ArrayList<AST> children;

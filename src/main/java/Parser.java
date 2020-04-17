@@ -179,8 +179,8 @@ public class Parser {
                 nextToken.getType() == TokenClass.FLOAT ||
                 nextToken.getType() == TokenClass.STRING ||
                 nextToken.getType() == TokenClass.LSQUAREBRACKET) {
-            newExprNode = new AST(ASTNodeType.BINDING, "expression_binding", parentNode, null);
-            newNode = new AST(ASTNodeType.COLON, currentToken.getLexeme(), parentNode, null);
+            newExprNode = new AST(ASTNodeType.BINDING, "expression_binding", currentToken.getString(), parentNode, null);
+            newNode = new AST(ASTNodeType.COLON, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
             parentNode.add(newExprNode);
             pathToTokenParent.add(parentNode.getChildren().size() - 1);
             ast.addByPath(newNode, pathToTokenParent);
@@ -203,7 +203,7 @@ public class Parser {
                 nextToken.getType() == TokenClass.ID ||
                 nextToken.getType() == TokenClass.RBRACE) {
             boolean added = addAOpeningTokenToTheAST(ast, parentNode, ASTNodeType.BODY, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "body", currentToken.getLexeme(), "PHRASE", pathToTokenParent);
+                    "body", currentToken.getLexeme(), "PHRASE", pathToTokenParent, currentToken.getString());
             if (!added) {
                 return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                         ">: \"" + currentToken.getLexeme() + "\" скобка ожидается в составе цикла или определения функции";
@@ -230,21 +230,21 @@ public class Parser {
                         return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                                 ">: \"" + currentToken.getLexeme() + "\" ожидается тип параметра";
                     } else {
-                        newExprNode = new AST(ASTNodeType.SENTENCEFUNCTIONPARAM, "expression_function_param", parentNode, null);
-                        newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                        newExprNode = new AST(ASTNodeType.SENTENCEFUNCTIONPARAM, "expression_function_param", currentToken.getString(), parentNode, null);
+                        newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                     }
                 } else if (nextToken.getType() == TokenClass.ID ||
                         nextToken.getType() == TokenClass.MUTABLE) {
                     if (parentNode.getParent() != null && parentNode.getParent().getNodeType() == ASTNodeType.PHRASEFUNCTIONDEFINITION) {
-                        newExprNode = new AST(ASTNodeType.SENTENCEFUNCTIONDEFINITIONPARAM, "expression_function_definition_param", parentNode, null);
-                        newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                        newExprNode = new AST(ASTNodeType.SENTENCEFUNCTIONDEFINITIONPARAM, "expression_function_definition_param", currentToken.getString(), parentNode, null);
+                        newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                     } else {
-                        newExprNode = new AST(ASTNodeType.SENTENCEFUNCTIONPARAM, "expression_function_param", parentNode, null);
-                        newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                        newExprNode = new AST(ASTNodeType.SENTENCEFUNCTIONPARAM, "expression_function_param", currentToken.getString(), parentNode, null);
+                        newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                     }
                 } else if (nextToken.getType() == TokenClass.RPARENTHESIS) {
-                    newExprNode = new AST(ASTNodeType.SENTENCEE, "e", parentNode, null);
-                    newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                    newExprNode = new AST(ASTNodeType.SENTENCEE, "e", currentToken.getString(), parentNode, null);
+                    newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                 } else {
                     return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" ожидается параметр";
@@ -257,26 +257,26 @@ public class Parser {
                         nextToken.getType() == TokenClass.OCTALVARIABLE ||
                         nextToken.getType() == TokenClass.BINARYVARIABLE ||
                         nextToken.getType() == TokenClass.ID) {
-                    newExprNode = new AST(ASTNodeType.SENTENCEASSERTPARAM, "expression_assert_param", parentNode, null);
-                    newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                    newExprNode = new AST(ASTNodeType.SENTENCEASSERTPARAM, "expression_assert_param", currentToken.getString(), parentNode, null);
+                    newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                 } else {
                     return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" ожидается параметр";
                 }
             } else if (parentNode.getNodeType() == ASTNodeType.EXPRESSIONPRINTLNMACRO) {
                 if (nextToken.getType() == TokenClass.STRINGVARIABLE) {
-                    newExprNode = new AST(ASTNodeType.SENTENCEPRINTLNPARAM, "expression_println_param", parentNode, null);
-                    newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                    newExprNode = new AST(ASTNodeType.SENTENCEPRINTLNPARAM, "expression_println_param", currentToken.getString(), parentNode, null);
+                    newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                 } else {
                     return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" ожидается строка";
                 }
             } else if (parentNode.getNodeType() == ASTNodeType.RPARENTHESIS) {
-                newExprNode = new AST(ASTNodeType.SENTENCEE, "e", parentNode, null);
-                newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                newExprNode = new AST(ASTNodeType.SENTENCEE, "e", currentToken.getString(), parentNode, null);
+                newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
             } else if (parentNode.getNodeType() == ASTNodeType.POINTFUNCTION) {
-                newExprNode = new AST(ASTNodeType.SENTENCEINDEX, "index", parentNode, null);
-                newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), parentNode, null);
+                newExprNode = new AST(ASTNodeType.SENTENCEINDEX, "index", currentToken.getString(), parentNode, null);
+                newNode = new AST(ASTNodeType.LPARENTHESIS, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
             } else {
                 return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                         ">: \"" + currentToken.getLexeme() + "\" ожидается после идентификатора функции или макроса";
@@ -296,8 +296,8 @@ public class Parser {
         if (nextToken.getType() == TokenClass.INT ||
                 nextToken.getType() == TokenClass.FLOAT) {
             if (parentNode != null && parentNode.getNodeType() == ASTNodeType.BINDING) {
-                ast.addByPath(new AST(ASTNodeType.LSQUAREBRACKET, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
-                ast.addByPath(new AST(ASTNodeType.ARRAYDECLARATION, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.LSQUAREBRACKET, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.ARRAYDECLARATION, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
                 pathToTokenParent.add(parentNode.getChildren().size() - 1);
             }
         } else if (nextToken.getType() == TokenClass.INTVARIABLE ||
@@ -306,8 +306,8 @@ public class Parser {
                 nextToken.getType() == TokenClass.OCTALVARIABLE ||
                 nextToken.getType() == TokenClass.BINARYVARIABLE ||
                 nextToken.getType() == TokenClass.ID) {
-            ast.addByPath(new AST(ASTNodeType.LSQUAREBRACKET, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
-            ast.addByPath(new AST(ASTNodeType.ARRAYINDEX, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+            ast.addByPath(new AST(ASTNodeType.LSQUAREBRACKET, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
+            ast.addByPath(new AST(ASTNodeType.ARRAYINDEX, "expression_array_index", currentToken.getString(), parentNode, null), pathToTokenParent);
             pathToTokenParent.add(parentNode.getChildren().size() - 1);
         } else {
             return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
@@ -381,7 +381,7 @@ public class Parser {
             if (parentNode != null && (parentNode.getNodeType() == ASTNodeType.ARRAYDECLARATION ||
                     parentNode.getNodeType() == ASTNodeType.ARRAYINDEX)) {
                 pathToTokenParent.remove(pathToTokenParent.size() - 1);
-                ast.addByPath(new AST(ASTNodeType.RSQUAREBRACKET, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.RSQUAREBRACKET, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
             } else {
                 return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                         ">: \"" + currentToken.getLexeme() + "\" не у дел";
@@ -424,7 +424,7 @@ public class Parser {
                     nextToken.getType() == TokenClass.OCTALVARIABLE ||
                     nextToken.getType() == TokenClass.BINARYVARIABLE) {
                 if (parentNode.getNodeType() == ASTNodeType.ARRAYDECLARATION) {
-                    ast.addByPath(new AST(ASTNodeType.SEMICOLON, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                    ast.addByPath(new AST(ASTNodeType.SEMICOLON, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
                 } else {
                     return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" ожидается объявление массива";
@@ -459,15 +459,15 @@ public class Parser {
         AST newNode;
         if (nextToken.getType() == TokenClass.SEMICOLON ||
                 nextToken.getType() == TokenClass.LBRACE) {
-            newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null);
+            newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), currentToken.getString(), parentNode, null);
             ast.addByPath(newNode, pathToTokenParent);
         } else if (nextToken.getType() == TokenClass.COMMA) {
-            ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null),
+            ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), currentToken.getString(), parentNode, null),
                     pathToTokenParent);
         } else if (nextToken.getType() == TokenClass.ROUND) {
             if (parentNode != null && parentNode.getNodeType() == ASTNodeType.CYCLE) {
                 addANodeToTheAST(ast, parentNode, ASTNodeType.ROUND, ASTNodeType.valueOf(currentToken.getType().name()),
-                        "expression_round", currentToken.getLexeme(), pathToTokenParent);
+                        "expression_round", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
             } else {
                 return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                         ">: \"" + currentToken.getLexeme() + "\" ожидается в цикле";
@@ -475,7 +475,7 @@ public class Parser {
         } else if (nextToken.getType() == TokenClass.RSQUAREBRACKET) {
             if (parentNode.getNodeType() == ASTNodeType.ARRAYDECLARATION ||
                     parentNode.getNodeType() == ASTNodeType.ARRAYINDEX) {
-                ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null)
+                ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), currentToken.getString(), parentNode, null)
                         , pathToTokenParent);
             } else {
                 return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
@@ -489,7 +489,7 @@ public class Parser {
                 nextToken.getType() == TokenClass.OPERATOROR ||
                 nextToken.getType() == TokenClass.OPERATORAND) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.valueOf(nextToken.getType().name()), ASTNodeType.valueOf(currentToken.getType().name()),
-                    nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent);
+                    nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else if (nextToken.getType() == TokenClass.RPARENTHESIS) {
             if (parentNode.getNodeType() == ASTNodeType.OPERATORSUMMING ||
                     parentNode.getNodeType() == ASTNodeType.OPERATORDIFFERENCE ||
@@ -503,7 +503,8 @@ public class Parser {
                     parentNode.getNodeType() == ASTNodeType.OPERATOREQUALITY ||
                     parentNode.getNodeType() == ASTNodeType.OPERATORINEQUALITY ||
                     parentNode.getNodeType() == ASTNodeType.SENTENCEINDEX) {
-                ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                        currentToken.getString(), parentNode, null), pathToTokenParent);
             } else {
                 ArrayList<Integer> path = new ArrayList<>(pathToTokenParent);
                 boolean checkOpening = false;
@@ -517,7 +518,8 @@ public class Parser {
                     }
                 }
                 if (checkOpening) {
-                    ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                    ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                            currentToken.getString(), parentNode, null), pathToTokenParent);
                 } else {
                     return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" нет открывающей скобки";
@@ -534,7 +536,8 @@ public class Parser {
                 nextToken.getType() == TokenClass.COMMA ||
                 nextToken.getType() == TokenClass.RPARENTHESIS) {
             if (parentNode.getNodeType() != ASTNodeType.BODY) {
-                newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null);
+                newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                        currentToken.getString(), parentNode, null);
                 ast.addByPath(newNode, pathToTokenParent);
             } else {
                 return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
@@ -551,7 +554,8 @@ public class Parser {
                                                                                    AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.COMMA ||
                 nextToken.getType() == TokenClass.RPARENTHESIS) {
-            ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null),
+            ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                            currentToken.getString(), parentNode, null),
                     pathToTokenParent);
         } else {
             return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
@@ -564,15 +568,17 @@ public class Parser {
                                                                     AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.OPERATORASSIGNMENT) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.OPERATORASSIGNMENT, ASTNodeType.valueOf(currentToken.getType().name()),
-                    nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent);
+                    nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else if (nextToken.getType() == TokenClass.COMMA ||
                 nextToken.getType() == TokenClass.LBRACE ||
                 nextToken.getType() == TokenClass.RPARENTHESIS) {
-            ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null),
+            ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                            currentToken.getString(), parentNode, null),
                     pathToTokenParent);
         } else if (nextToken.getType() == TokenClass.SEMICOLON) {
             if (parentNode.getNodeType() == ASTNodeType.ARRAYDECLARATION) {
-                ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null),
+                ast.addByPath(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                                currentToken.getString(), parentNode, null),
                         pathToTokenParent);
             }
         } else {
@@ -594,7 +600,7 @@ public class Parser {
                     parentNode.getNodeType() == ASTNodeType.OPERATORDIVISION ||
                     parentNode.getNodeType() == ASTNodeType.OPERATORMODULO ||
                     parentNode.getNodeType() == ASTNodeType.EXPRESSIONRETURN) {
-                newNode = new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null);
+                newNode = new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
                 parentNode.add(newNode);
             } else {
                 return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
@@ -606,28 +612,28 @@ public class Parser {
                         parentNode.getNodeType() == ASTNodeType.MUTABLEDEFINITION ||
                         parentNode.getNodeType() == ASTNodeType.SENTENCEFUNCTIONDEFINITIONPARAM) {
                     addANodeToTheAST(ast, parentNode, ASTNodeType.TYPEBINDING, ASTNodeType.valueOf(currentToken.getType().name()),
-                            "expression_type_binding", currentToken.getLexeme(), pathToTokenParent);
+                            "expression_type_binding", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
                 } else {
                     return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" связывание переменной возможно только при ее определении";
                 }
             }
         } else if (nextToken.getType() == TokenClass.COMMA) {
-            ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+            ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
         } else if (nextToken.getType() == TokenClass.POINT) {
             if (parentNode.getNodeType() == ASTNodeType.OPERATOREQUALITY) {
-                ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
             } else if (parentNode.getNodeType() == ASTNodeType.PHRASEIF) {
-                newExprNode = new AST(ASTNodeType.CONDITIONIF, "expression_condition_if", parentNode, null);
+                newExprNode = new AST(ASTNodeType.CONDITIONIF, "expression_condition_if", currentToken.getString(), parentNode, null);
                 ast.addByPath(newExprNode, pathToTokenParent);
                 pathToTokenParent.add(parentNode.getChildren().size() - 1);
                 parentNode = parentNode.getChildren().get(parentNode.getChildren().size() - 1);
                 addANodeToTheAST(ast, parentNode, ASTNodeType.OPERATOREQUALITY, ASTNodeType.valueOf(currentToken.getType().name()),
-                        "==", currentToken.getLexeme(), pathToTokenParent);
+                        "==", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
             } else if (parentNode.getNodeType() == ASTNodeType.CONDITIONIF) {
                 pathToTokenParent.add(parentNode.getChildren().size() - 1);
                 parentNode = parentNode.getChildren().get(0);
-                ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
             }
         } else if (nextToken.getType() == TokenClass.OPERATORINEQUALITY ||
                 nextToken.getType() == TokenClass.OPERATOREQUALITY ||
@@ -636,19 +642,21 @@ public class Parser {
             if (parentNode != null) {
                 if (parentNode.getNodeType() == ASTNodeType.PHRASEIF) {
                     addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONIF, ASTNodeType.valueOf(nextToken.getType().name()),
-                            "expression_condition_if", nextToken.getLexeme(), pathToTokenParent);
+                            "expression_condition_if", nextToken.getLexeme(), pathToTokenParent, currentToken.getString());
                     pathToTokenParent.add(0);
                     parentNode = ast.searchByPath(pathToTokenParent);
-                    parentNode.add(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null));
+                    parentNode.add(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                            currentToken.getString(), parentNode, null));
                 } else if (parentNode.getNodeType() == ASTNodeType.PHRASEWHILE) {
                     addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONWHILE, ASTNodeType.valueOf(nextToken.getType().name()),
-                            "expression_condition_while", nextToken.getLexeme(), pathToTokenParent);
+                            "expression_condition_while", nextToken.getLexeme(), pathToTokenParent, currentToken.getString());
                     pathToTokenParent.add(0);
                     parentNode = ast.searchByPath(pathToTokenParent);
-                    parentNode.add(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null));
+                    parentNode.add(new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                            currentToken.getString(), parentNode, null));
                 } else if (parentNode.getNodeType() == ASTNodeType.SENTENCEASSERTPARAM) {
                     addANodeToTheAST(ast, parentNode, ASTNodeType.valueOf(nextToken.getType().name()), ASTNodeType.valueOf(currentToken.getType().name()),
-                            nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent);
+                            nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
                 }
             } else {
                 return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
@@ -664,16 +672,16 @@ public class Parser {
                 nextToken.getType() == TokenClass.OPERATORAND) {
             if (parentNode.getNodeType() == ASTNodeType.BODY) {
                 addANodeToTheAST(ast, parentNode, ASTNodeType.EXPRESSIONASSIGNMENT, ASTNodeType.valueOf(currentToken.getType().name()),
-                        "expression_assignment", currentToken.getLexeme(), pathToTokenParent);
+                        "expression_assignment", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
             } else {
                 addANodeToTheAST(ast, parentNode, ASTNodeType.valueOf(nextToken.getType().name()), ASTNodeType.valueOf(currentToken.getType().name()),
-                        nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent);
+                        nextToken.getLexeme(), currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
             }
         } else if (nextToken.getType() == TokenClass.IN) {
             if (parentNode != null && (parentNode.getNodeType() == ASTNodeType.PHRASEFOR ||
                     (parentNode.getNodeType() == ASTNodeType.MUTABLEDEFINITION))) {
                 addANodeToTheAST(ast, parentNode, ASTNodeType.CONDITIONFOR, ASTNodeType.valueOf(currentToken.getType().name()),
-                        "expression_condition_for", currentToken.getLexeme(), pathToTokenParent);
+                        "expression_condition_for", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
             } else {
                 return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                         ">: \"" + currentToken.getLexeme() + "\" c \"in\" может искользоваться только в цикле";
@@ -691,7 +699,7 @@ public class Parser {
                     parentNode.getNodeType() == ASTNodeType.OPERATOREQUALITY ||
                     parentNode.getNodeType() == ASTNodeType.OPERATORINEQUALITY ||
                     parentNode.getNodeType() == ASTNodeType.SENTENCEINDEX) {
-                ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
             } else {
                 ArrayList<Integer> path = new ArrayList<>(pathToTokenParent);
                 boolean checkOpening = false;
@@ -705,7 +713,7 @@ public class Parser {
                     }
                 }
                 if (checkOpening) {
-                    ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+                    ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
                 } else {
                     return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                             ">: \"" + currentToken.getLexeme() + "\" нет открывающей скобки";
@@ -713,11 +721,11 @@ public class Parser {
             }
         } else if (nextToken.getType() == TokenClass.LSQUAREBRACKET) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.ARRAYELEMENT, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_array_element", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_array_element", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else if (nextToken.getType() == TokenClass.RSQUAREBRACKET) {
-            ast.addByPath(new AST(ASTNodeType.LSQUAREBRACKET, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+            ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
         } else if (nextToken.getType() == TokenClass.LBRACE) {
-            ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+            ast.addByPath(new AST(ASTNodeType.ID, currentToken.getLexeme(), currentToken.getString(), parentNode, null), pathToTokenParent);
         } else {
             return "ERROR;LOC<" + currentToken.getString().toString() + "," + currentToken.getPosition().toString() +
                     ">: \"" + currentToken.getLexeme() + "\" не у дел";
@@ -743,7 +751,8 @@ public class Parser {
                     parentNode = parentNode.getParent();
                     pathToTokenParent.remove(i);
                 } else {
-                    newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode, null);
+                    newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                            currentToken.getString(), parentNode, null);
                     ast.addByPath(newNode, pathToTokenParent);
                     break;
                 }
@@ -759,7 +768,7 @@ public class Parser {
                                                                    AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.CHAR) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.POINTFUNCTION, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_point_function", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_point_function", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: \"" + currentToken.getLexeme() + "\" ожидается после идентификатора";
@@ -770,7 +779,7 @@ public class Parser {
     public String checkTheConsistencyOfTheGrammarStartingWithChar(Token nextToken, Token currentToken, AST ast,
                                                                    AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.LPARENTHESIS) {
-            ast.addByPath(new AST(ASTNodeType.CHAR, currentToken.getLexeme(), parentNode, null), pathToTokenParent);
+            ast.addByPath(new AST(ASTNodeType.CHAR, currentToken.getLexeme(), currentToken.getString(),  parentNode, null), pathToTokenParent);
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: \"" + currentToken.getLexeme() + "\" ожидается скобка";
@@ -805,7 +814,7 @@ public class Parser {
                     nextToken.getType() == TokenClass.OCTALVARIABLE ||
                     nextToken.getType() == TokenClass.BINARYVARIABLE) {
                 addANodeToTheAST(ast, parentNode, ASTNodeType.CYCLE, ASTNodeType.valueOf(currentToken.getType().name()),
-                        "expression_in", currentToken.getLexeme(), pathToTokenParent);
+                        "expression_in", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
             } else {
                 return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                         ">: после " + currentToken.getLexeme() + " ожидается возвращаемое значение или идентификатор";
@@ -828,7 +837,7 @@ public class Parser {
                 nextToken.getType() == TokenClass.BINARYVARIABLE ||
                 nextToken.getType() == TokenClass.STRINGVARIABLE) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.PHRASEIF, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_if", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_if", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается возвращаемое значение или идентификатор";
@@ -840,7 +849,7 @@ public class Parser {
                                                                 AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.LBRACE) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.PHRASEELSE, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_else", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_else", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается идентификатор";
@@ -853,7 +862,7 @@ public class Parser {
         if (nextToken.getType() == TokenClass.ID ||
                 nextToken.getType() == TokenClass.MUTABLE) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.PHRASEFOR, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_for", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_for", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается идентификатор";
@@ -872,7 +881,7 @@ public class Parser {
                 nextToken.getType() == TokenClass.BINARYVARIABLE ||
                 nextToken.getType() == TokenClass.STRINGVARIABLE) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.PHRASEWHILE, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_while", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_while", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается возвращаемое значение или идентификатор";
@@ -885,7 +894,7 @@ public class Parser {
         if (nextToken.getType() == TokenClass.ID ||
                 nextToken.getType() == TokenClass.MUTABLE) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.EXPRESSIONVARIABLEDEFINITION, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_variable_definition", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_variable_definition", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается идентификатор или \"mut\"";
@@ -897,7 +906,7 @@ public class Parser {
                                                                                 AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.LPARENTHESIS) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.EXPRESSIONASSERTMACRO, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression__assert_macros", currentToken.getLexeme(), pathToTokenParent);
+                    "expression__assert_macros", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается \"(\"";
@@ -909,7 +918,7 @@ public class Parser {
                                                                          AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.LPARENTHESIS) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.EXPRESSIONPRINTLNMACRO, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_println_macros", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_println_macros", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается \"(\"";
@@ -921,7 +930,7 @@ public class Parser {
                                                                           AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.ID) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.MUTABLEDEFINITION, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_mutable_definition", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_mutable_definition", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается идентификатор";
@@ -933,7 +942,7 @@ public class Parser {
                                                                      AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.LPARENTHESIS) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.FUNCTIONDECLARATION, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_function_declaration", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_function_declaration", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается \"(\"";
@@ -945,10 +954,10 @@ public class Parser {
                                                                         AST parentNode, ArrayList<Integer> pathToTokenParent) {
         if (nextToken.getType() == TokenClass.FUNCTIONID) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.PHRASEFUNCTIONDEFINITION, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_function_definition", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_function_definition", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else if (nextToken.getType() == TokenClass.MAIN) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.PHRASEMAINFUNCTIONDEFINITION, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_main_function_definition", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_main_function_definition", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается имя функции";
@@ -962,7 +971,7 @@ public class Parser {
         if (nextToken.getType() == TokenClass.INT ||
                 nextToken.getType() == TokenClass.FLOAT ||
                 nextToken.getType() == TokenClass.STRING) {
-            newNode = new AST(ASTNodeType.FUNCTIONRETURN, currentToken.getLexeme(), parentNode, null);
+            newNode = new AST(ASTNodeType.FUNCTIONRETURN, currentToken.getLexeme(), currentToken.getString(), parentNode, null);
             ast.addByPath(newNode, pathToTokenParent);
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
@@ -984,7 +993,7 @@ public class Parser {
                 nextToken.getType() == TokenClass.ARRAY ||
                 nextToken.getType() == TokenClass.FUNCTIONID) {
             addANodeToTheAST(ast, parentNode, ASTNodeType.EXPRESSIONRETURN, ASTNodeType.valueOf(currentToken.getType().name()),
-                    "expression_return", currentToken.getLexeme(), pathToTokenParent);
+                    "expression_return", currentToken.getLexeme(), pathToTokenParent, currentToken.getString());
         } else {
             return "ERROR;LOC<" + nextToken.getString().toString() + "," + nextToken.getPosition().toString() +
                     ">: после " + currentToken.getLexeme() + " ожидается возвращаемое значение (число или идентификатор)";
@@ -993,17 +1002,19 @@ public class Parser {
     }
 
     public static void addANodeToTheAST(AST ast, AST parentNode, ASTNodeType typeExprNode, ASTNodeType typeChildNode,
-                                        String exprNodeLexeme, String childNodeLexeme, ArrayList<Integer> pathToTokenParent) {
+                                        String exprNodeLexeme, String childNodeLexeme, ArrayList<Integer> pathToTokenParent,
+                                        Integer line) {
         AST newNode, newExprNode;
-        newExprNode = new AST(typeExprNode, exprNodeLexeme, parentNode, null);
-        newNode = new AST(typeChildNode, childNodeLexeme, newExprNode, null);
+        newExprNode = new AST(typeExprNode, exprNodeLexeme, line, parentNode, null);
+        newNode = new AST(typeChildNode, childNodeLexeme, line, newExprNode, null);
         parentNode.add(newExprNode);
         pathToTokenParent.add(parentNode.getChildren().size() - 1);
         ast.addByPath(newNode, pathToTokenParent);
     }
 
     public static boolean addAOpeningTokenToTheAST(AST ast, AST parentNode, ASTNodeType typeExprNode, ASTNodeType typeChildNode,
-                                                   String exprNodeLexeme, String childNodeLexeme, String startWith, ArrayList<Integer> pathToTokenParent) {
+                                                   String exprNodeLexeme, String childNodeLexeme, String startWith,
+                                                   ArrayList<Integer> pathToTokenParent, Integer line) {
         AST newNode, newExprNode;
         int size = pathToTokenParent.size();
         for (int i = size - 1; i >= 0; i--) {
@@ -1011,8 +1022,8 @@ public class Parser {
                 parentNode = parentNode.getParent();
                 pathToTokenParent.remove(i);
             } else {
-                newExprNode = new AST(typeExprNode, exprNodeLexeme, parentNode, null);
-                newNode = new AST(typeChildNode, childNodeLexeme, parentNode, null);
+                newExprNode = new AST(typeExprNode, exprNodeLexeme, line, parentNode, null);
+                newNode = new AST(typeChildNode, childNodeLexeme, line, parentNode, null);
                 parentNode.add(newNode);
                 parentNode.add(newExprNode);
                 pathToTokenParent.add(parentNode.getChildren().size() - 1);
@@ -1022,7 +1033,8 @@ public class Parser {
         return false;
     }
 
-    public static boolean addAClosingTokenToTheAST(AST ast, AST parentNode, Token currentToken, String startWith, ArrayList<Integer> pathToTokenParent) {
+    public static boolean addAClosingTokenToTheAST(AST ast, AST parentNode, Token currentToken, String startWith,
+                                                   ArrayList<Integer> pathToTokenParent) {
         AST newNode;
         int size = pathToTokenParent.size();
         for (int i = size - 1; i >= 0; i--) {
@@ -1030,7 +1042,8 @@ public class Parser {
                 parentNode = parentNode.getParent();
                 pathToTokenParent.remove(i);
             } else {
-                newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(), parentNode.getParent(), null);
+                newNode = new AST(ASTNodeType.valueOf(currentToken.getType().name()), currentToken.getLexeme(),
+                        currentToken.getString(), parentNode.getParent(), null);
                 if (startWith.equals("EXPRESSION")) {
                     ast.addByPath(newNode, pathToTokenParent);
                     pathToTokenParent.remove(i);
