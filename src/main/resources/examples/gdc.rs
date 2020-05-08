@@ -1,6 +1,7 @@
 fn main() {
-    //println!("hello");
-    let n: i32 = gdc(10, 5);
+    let num1: i32 = 20;
+    let num2: i32 = 5;
+    let n: i32 = gdc(num1, num2);
     println!("{}", n);
 
 }

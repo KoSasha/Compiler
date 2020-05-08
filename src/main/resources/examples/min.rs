@@ -1,5 +1,5 @@
 fn main() {
-    let array = [1, 2, 3, 4, -34];
+    let array = [1, 2, 77, -50, -34];
     let min: i32 = min(array);
     println!("{}", min);
 }

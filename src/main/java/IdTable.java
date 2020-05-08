@@ -16,7 +16,7 @@ public class IdTable {
     @JsonIgnore
     private Character subLevel;
 
-    @JsonIgnore
+//    @JsonIgnore
     private ArrayList<IdDeclarationDescription> idDeclarationDescriptions;
 
     public void formATable(AST ast) {
@@ -63,7 +63,7 @@ public class IdTable {
 
     public void addToIdTable(AST ast, String lvl) {
         idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT, ast.getNodeType(),
-                ast.getLexeme(), lvl, null));
+                ast.getLexeme(), lvl, 1, null, null));
         this.idTable.put(ast.getLexeme(), lvl);
         addDescriptionNode(ast, "i32", ASTNodeType.INT);
     }
@@ -81,18 +81,18 @@ public class IdTable {
                     descriptionLexeme = cousin.getLexeme();
                     declarationType = cousin.getNodeType();
                     idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(),
-                            ast.getLexeme(), lvl, null));
+                            ast.getLexeme(), lvl, 1, cousin.getLexeme(), null));
                 } else if (cousin.getNodeType() == ASTNodeType.OPERATORASSIGNMENT) {
                     descriptionLexeme = cousin.getChildren().get(0).getLexeme();
                     declarationType = cousin.getChildren().get(0).getNodeType();
                     idDeclarationDescriptions.add(new IdDeclarationDescription(cousin.getChildren().get(0).getNodeType(),
-                            ast.getNodeType(), ast.getLexeme(), lvl, null));
+                            ast.getNodeType(), ast.getLexeme(), lvl, 1, cousin.getChildren().get(1).getLexeme(), null));
                 }
             } else if (sibling.getNodeType() == ASTNodeType.STRINGVARIABLE) {
                 descriptionLexeme = "&str";
                 declarationType = ASTNodeType.STRING;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.STRING,
-                        ast.getNodeType(), ast.getLexeme(), lvl, null));
+                        ast.getNodeType(), ast.getLexeme(), lvl, sibling.getLexeme().length(), sibling.getLexeme(), null));
             } else if (sibling.getNodeType() == ASTNodeType.SINTVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.INTVARIABLE ||
                     sibling.getNodeType() == ASTNodeType.HEXVARIABLE ||
@@ -102,17 +102,18 @@ public class IdTable {
                 descriptionLexeme = "i32";
                 declarationType = ASTNodeType.INT;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT,
-                        ast.getNodeType(), ast.getLexeme(), lvl, null));
+                        ast.getNodeType(), ast.getLexeme(), lvl, 1, sibling.getLexeme(), null));
             } else if (sibling.getNodeType() == ASTNodeType.FLOATVARIABLE) {
                 descriptionLexeme = "f64";
                 declarationType = ASTNodeType.FLOAT;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.FLOAT,
-                        ast.getNodeType(), ast.getLexeme(), lvl, null));
+                        ast.getNodeType(), ast.getLexeme(), lvl, 1, sibling.getLexeme(), null));
             } else if (sibling.getNodeType() == ASTNodeType.ARRAY) {
                 descriptionLexeme = "i32";
                 declarationType = ASTNodeType.INT;
+                Integer arraySize = sibling.getLexeme().split(",").length;
                 idDeclarationDescriptions.add(new IdDeclarationDescription(ASTNodeType.INT,
-                        ASTNodeType.ARRAY, ast.getLexeme(), lvl, null));
+                        ASTNodeType.ARRAY, ast.getLexeme(), lvl, arraySize, sibling.getLexeme(), null));
             }
             this.idTable.put(ast.getLexeme(), lvl);
             addDescriptionNode(ast, descriptionLexeme, declarationType);
@@ -132,19 +133,22 @@ public class IdTable {
                 cousin.getNodeType() == ASTNodeType.FLOAT) {
             descriptionLexeme = cousin.getLexeme();
             declarationType = cousin.getNodeType();
-            param = new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(), ast.getLexeme(), lvl, null);
+            param = new IdDeclarationDescription(cousin.getNodeType(), ast.getNodeType(), ast.getLexeme(), lvl, 1,
+                    null, null);
             this.idDeclarationDescriptions.add(param);
         } else if (cousin.getNodeType() == ASTNodeType.LSQUAREBRACKET) {
             descriptionLexeme = sibling.getChildren().get(2).getChildren().get(0).getLexeme();
             declarationType = sibling.getChildren().get(2).getChildren().get(0).getNodeType();
+            String arraySize = cousin.getParent().getChildren().get(2).getChildren().get(2).getLexeme();
             param = new IdDeclarationDescription(sibling.getChildren().get(2).getChildren().get(0).getNodeType(),
-                    ASTNodeType.ARRAY, ast.getLexeme(), lvl, null);
+                    ASTNodeType.ARRAY, ast.getLexeme(), lvl, Integer.parseInt(arraySize), null, null);
             this.idDeclarationDescriptions.add(param);
         }
         for (IdDeclarationDescription idDeclarationDescription: this.idDeclarationDescriptions) {
             if (idDeclarationDescription.getType() == ASTNodeType.FUNCTIONID &&
                     idDeclarationDescription.getLexeme().equals(functionName)) {
                 idDeclarationDescription.getFunctionParam().add(param);
+                idDeclarationDescription.setCount(idDeclarationDescription.getCount() + 1);
                 break;
             }
         }
@@ -156,7 +160,7 @@ public class IdTable {
         int size = ast.getParent().getChildren().size();
         AST sibling =  ast.getParent().getChildren().get(size - 1);
         idDeclarationDescriptions.add(new IdDeclarationDescription(sibling.getNodeType(), ast.getNodeType(),
-                ast.getLexeme(), lvl, new ArrayList<>()));
+                ast.getLexeme(), lvl, 0, null, new ArrayList<>()));
         this.idTable.put(ast.getLexeme(), lvl);
         addDescriptionNode(ast, sibling.getLexeme(), sibling.getNodeType());
     }

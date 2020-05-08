@@ -13,6 +13,8 @@ public class Application {
 
     public static Parser parser;
 
+    public static Assembler assembler;
+
     public static Sema semanticAnalysis;
 
     public static Token currentToken;
@@ -93,8 +95,12 @@ public class Application {
             System.out.println(semaLog);
             System.exit(0);
         }
+        assembler = new Assembler(new ArrayList<>(), new ArrayList<>(), 8, -1, "main", ".LFB0");
+        assembler.asm(ast, idTable);
+        if (option != null && option.equals("--dump-asm")) {
+            assembler.printAsmFile();
+        }
         String annotatedAstJson = ast.toJSON("src/main/resources/annotatedast.json");
-        System.out.println(idTable.getIdTable().size());
     }
 
     public static void processingArguments(String[] args) throws CommandLineArgumentsException {
