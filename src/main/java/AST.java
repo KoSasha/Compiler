@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Setter@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AST implements JSON {
-    @JsonIgnore
+//    @JsonIgnore
     private ASTNodeType nodeType;
 
     private String lexeme;

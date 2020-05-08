@@ -13,5 +13,9 @@ public class IdDeclarationDescription {
 
     private String level;
 
+    private Integer count;
+
+    private String value;
+
     private ArrayList<IdDeclarationDescription> functionParam;
 }
