@@ -1,15 +1,16 @@
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Scanner;
+
+
+import jdk.internal.jline.console.ConsoleReader;
+
+import java.io.*;
+import java.util.*;
 
 public class Application {
     public static String option;
 
     public static String inputFileAddress;
+
+    public static String asmFileAddress;
 
     public static Parser parser;
 
@@ -36,11 +37,13 @@ public class Application {
             e.printStackTrace();
         } catch (CommandLineArgumentsException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
     }
 
-    public static void compiler(Scanner in) throws IOException {
+    public static void compiler(Scanner in) throws IOException, InterruptedException {
         parser = new Parser();
         ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
@@ -95,12 +98,23 @@ public class Application {
             System.out.println(semaLog);
             System.exit(0);
         }
+        String annotatedAstJson = ast.toJSON("src/main/resources/annotatedast.json");
         assembler = new Assembler(new ArrayList<>(), new ArrayList<>(), 8, -1, "main", ".LFB0");
         assembler.asm(ast, idTable);
         if (option != null && option.equals("--dump-asm")) {
             assembler.printAsmFile();
         }
-        String annotatedAstJson = ast.toJSON("src/main/resources/annotatedast.json");
+        asmFileAddress = assembler.getAsmFileName();
+        asmComlile(asmFileAddress);
+    }
+
+    public static void asmComlile(String asmFileAddress) throws IOException {
+        Process proc = Runtime.getRuntime().exec("gcc " + asmFileAddress + " -o src/main/resources/app");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        String line = "";
+        while((line = reader.readLine()) != null) {
+            System.out.print(line + "\n");
+        }
     }
 
     public static void processingArguments(String[] args) throws CommandLineArgumentsException {

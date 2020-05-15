@@ -50,6 +50,8 @@ public class Assembler {
 
     public static Integer stackSmashingFlag = 0;
 
+    public static Integer nestingFlag = 0;
+
     public static String printlnMacro = "\tmovl\t%eax, %esi\n" +
             "\tleaq\t.LC0(%rip), %rdi\n" +
             "\tmovl\t$0, %eax\n" +
@@ -112,6 +114,8 @@ public class Assembler {
 
     public static String dataRegister = "%rdx";
 
+    public static String counterRegister = "%rcx";
+
     public static String dataSubRegister = "%edx";
 
     public static String accumulatorSubRegister = "%eax";
@@ -159,6 +163,10 @@ public class Assembler {
                     addFunctionDefinitionParamsToStack(fw, ast, idTable);
                     break;
 
+                case PHRASEELSE:
+                    addElseBody(fw, ast, idTable);
+                    break;
+
                 case OPERATORINEQUALITY:
                 case OPERATOREQUALITY:
                 case OPERATORAND:
@@ -186,6 +194,10 @@ public class Assembler {
 
                 case EXPRESSIONVARIABLEDEFINITION:
                     addVariableDefinition(fw, ast, idTable);
+                    break;
+
+                case POINTFUNCTION:
+                    takeACharacterFromAString(fw, ast);
                     break;
 
                 case ROUND:
@@ -231,7 +243,10 @@ public class Assembler {
                     Integer count = 0;
                     for (IdDeclarationDescription param: description.getFunctionParam()) {
                         count += param.getCount();
+                        System.out.println(param.getType());
                         if (param.getType() == ASTNodeType.ARRAY) {
+                            count += 1;
+                        } else if (param.getDataType() == ASTNodeType.STRING) {
                             count += 1;
                         }
                     }
@@ -251,23 +266,29 @@ public class Assembler {
 
     public void addFunctionParamsToStack(FileWriter fw, AST ast, IdTable idTable) throws IOException {
         String typeSuffix = null;
-        Integer off = 0;
+        Integer off = 0, cnt = 0;
         for (AST astChild: ast.getChildren()) {
             if (astChild.getNodeType() != ASTNodeType.COMMA) {
                 typeSuffix = getTypeSuffix(astChild);
-                off = addParamToStack(astChild, typeSuffix, idTable, fw);
+                cnt += 1;
+                off = addParamToStack(astChild, typeSuffix, idTable, fw, cnt);
             }
         }
         this.setStackOffset(this.getStackOffset() - 4 * off);
         writeDefinitionFunctionParamToAsm(fw, typeSuffix, off);
     }
 
-    public Integer addParamToStack(AST ast, String typeSuffix, IdTable idTable, FileWriter fw) throws IOException {
+    public Integer addParamToStack(AST ast, String typeSuffix, IdTable idTable, FileWriter fw, Integer cnt) throws IOException {
         for (IdDeclarationDescription descriptionParam: idTable.getIdDeclarationDescriptions()) {
             if (searchIdInIdTable(ast.getChildren().get(0), ASTNodeType.ID, descriptionParam)) {
-                addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
-                this.setStackOffset(this.getStackOffset() + 4);
-                return 1;
+                if (descriptionParam.getDataType() != ASTNodeType.STRING) {
+                    addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
+                    this.setStackOffset(this.getStackOffset() + 4);
+                    return 1;
+                } else {
+                    addStringToStack(fw, descriptionParam, typeSuffix, cnt);
+                    return 2;
+                }
             } else if (searchIdInIdTable(ast.getChildren().get(0), ASTNodeType.ARRAY, descriptionParam)) {
                 writeToAsmFile(fw, stackSmashing);
                 stackSmashingFlag = 1;
@@ -279,51 +300,56 @@ public class Assembler {
                     this.setStackOffset(this.getStackOffset() + 4);
                 }
                 return 0;
-            } else if (searchIdInIdTable(ast.getChildren().get(0), ASTNodeType.STRING, descriptionParam)) {
-                fw.write(stackSmashing);
-                stackSmashingFlag = 1;
-                fw.write(commandCopy + "absq $" + descriptionParam.getLexeme() + ", " + accumulatorSubRegister + "\n");
-                this.setStackOffset(19);
-                fw.write(commandCopy + typeSuffixQuad + " " + accumulatorRegister + "-" + this.getStackOffset().toString()
-                        + "(" + basePointerRegister + ")\n");
-                Integer offset = this.getStackOffset() - 8;
-                fw.write(commandCopy + typeSuffix + " " + "$26991" + "-" + offset.toString()
-                        + "(" + basePointerRegister + ")\n");
-                offset -= 2;
-                fw.write(commandCopy + typeSuffixByte + " " + "$0" + "-" + offset.toString()
-                        + "(" + basePointerRegister + ")\n");
-                offset = 22;
-                fw.write(commandCopy + typeSuffixByte + " " + "$31092" + "-" + offset.toString()
-                        + "(" + basePointerRegister + ")\n");
-                offset = 20;
-                fw.write(commandCopy + typeSuffixByte + " " + "$0" + "-" + offset.toString()
-                        + "(" + basePointerRegister + ")\n");
-                this.setStackOffset(22);
-                return 2;
             }
         }
         return 0;
     }
 
+    public void addStringToStack(FileWriter fw, IdDeclarationDescription descriptionParam,  String typeSuffix, Integer cnt) throws IOException {
+        if (cnt == 1) {
+            writeToAsmFile(fw, stackSmashing + commandCopy + "absq $" + descriptionParam.getValue() + ", " + accumulatorRegister + "\n"
+                            + commandCopy + typeSuffixQuad + accumulatorRegister + ", -19(" + basePointerRegister + ")\n");
+            stackSmashingFlag = 1;
+            addRegisterToRegisters(RegisterType.RAX, accumulatorRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
+            addRegisterToRegisters(RegisterType.RDI, sourceIndexRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
+            addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
+        } else {
+            this.setStackOffset(22);
+            writeToAsmFile(fw,commandCopy + typeSuffix + "$" + descriptionParam.getValue() + ", -11(" + basePointerRegister + ")\n"
+                    + commandCopy + typeSuffixByte + "$0, -9(" + basePointerRegister + ")\n "
+                    + commandCopy + typeSuffix + "$" + descriptionParam.getValue() + ", -" + this.getStackOffset() + "(" + basePointerRegister + ")\n"
+                    + commandCopy + typeSuffixByte + "$0, -20(" + basePointerRegister + ")\n"
+                    + commandCopyAddress + typeSuffixQuad + "-" + this.getStackOffset() + "(" + basePointerRegister + "), " + dataRegister + "\n"
+                    + commandCopyAddress + typeSuffixQuad + "-19(" + basePointerRegister + "), " + accumulatorRegister + "\n"
+                    + commandCopy + typeSuffixQuad + dataRegister + ", " + sourceIndexRegister + "\n"
+                    + commandCopy + typeSuffixQuad + accumulatorRegister + ", " + destinationIndexRegister + "\n");
+            addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
+            addRegisterToRegisters(RegisterType.RSI, sourceIndexRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
+        }
+    }
+
     public void writeDefinitionFunctionParamToAsm(FileWriter fw, String typeSuffix, Integer off) throws IOException {
         Integer offset = 0;
-        for (Register reg: this.getStack()) {
-            offset = this.getStackOffset() - this.getStack().indexOf(reg) * 4;
-            writeToAsmFile(fw, commandCopy + typeSuffix + "$" + reg.getValue() + ", "
-                    + "-" + offset.toString() + "(" + basePointerRegister + ")\n");
+        if (!typeSuffix.startsWith(typeSuffixWord)) {
+            for (Register reg : this.getStack()) {
+                offset = this.getStackOffset() - this.getStack().indexOf(reg) * 4;
+                writeToAsmFile(fw, commandCopy + typeSuffix + "$" + reg.getValue() + ", "
+                        + "-" + offset.toString() + "(" + basePointerRegister + ")\n");
+            }
         }
         Integer stackSize = this.getStack().size();
         if (off == 0) {
             writeArrayParam(fw, stackSize);
+            writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
             offset = 36;
         } else if (off == 1) {
             writeSimpleParam(fw, stackSize, offset, typeSuffix);
+            writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
             offset = 4;
         } else {
-            writeStringParam(fw, stackSize, offset, typeSuffix);
+            writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
             offset = 28;
         }
-        writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
         addDataForPrint(fw, offset);
     }
 
@@ -362,16 +388,6 @@ public class Assembler {
                 + commandCopy + typeSuffix + accumulatorSubRegister + ", " + destinationIndexSubRegister + "\n");
     }
 
-    public void writeStringParam(FileWriter fw, Integer stackSize, Integer offset, String typeSuffix) throws IOException {
-        fw = new FileWriter(asmFileAddress, true);
-        fw.write(commandCopyAddress + typeSuffixQuad + " -" + this.getStackOffset().toString()
-                + "(" + stackPointerRegister + "), " + dataRegister + "\n");
-        offset = this.getStackOffset() - 2;
-        fw.write(commandCopyAddress + typeSuffixQuad + " -" + offset.toString()
-                + "(" + stackPointerRegister + "), " + accumulatorRegister + "\n");
-        fw.close();
-    }
-
     public void addRegisterToRegisters(RegisterType reg, String regLexeme, String value, String nameVariable) {
         Register reg1 = new Register(reg, regLexeme, value, nameVariable);
         this.getRegisters().add(reg1);
@@ -407,31 +423,78 @@ public class Assembler {
     public void addFunctionDefinitionParamsToStack(FileWriter fw, AST ast, IdTable idTable) throws IOException {
         Integer offset;
         Integer countNotEmptyRegisters = this.getRegisters().size();
+        System.out.println(registers.get(countNotEmptyRegisters - 1).getType());
         if (this.getRegisters().get(countNotEmptyRegisters - 1).getType() == RegisterType.EDI) {
             copyToStack(fw, 8, destinationIndexSubRegister, typeSuffixLong, countNotEmptyRegisters - 1);
             copyToStack(fw, 4, sourceIndexSubRegister, typeSuffixLong, countNotEmptyRegisters - 2);
         } else if (this.getRegisters().get(countNotEmptyRegisters - 1).getType() == RegisterType.RDI) {
-            if (this.getRegisters().get(countNotEmptyRegisters - 2).getType() != RegisterType.RSI) {
                 this.setStackOffset(this.getStackOffset() - 8);
                 writeToAsmFile(fw,commandCopy + typeSuffixQuad + " " + destinationIndexRegister + ", -"
                         + this.getStackOffset()  + "(" + basePointerRegister + ")\n"
                         + commandCopy + typeSuffixQuad + " -"
                         + this.getStackOffset()  + "(" + basePointerRegister + "), " + accumulatorRegister + "\n");
-            } else {
-                copyToStack(fw, 2, destinationIndexRegister, typeSuffixQuad, countNotEmptyRegisters - 1);
-                copyToStack(fw, 8, sourceIndexRegister, typeSuffixQuad, countNotEmptyRegisters - 2);
-            }
+
+        } else {
+            offset = this.getStackOffset() + 10;
+            writeToAsmFile(fw,commandCopy + typeSuffixQuad + destinationIndexRegister + ", -" + offset.toString()
+                    + "(" + basePointerRegister + ")\n");
+            offset = offset + 8;
+            writeToAsmFile(fw,commandCopy + typeSuffixQuad + sourceIndexRegister + ", -" + offset.toString()
+                    + "(" + basePointerRegister + ")\n");
+            offset = offset / 2;
+            writeToAsmFile(fw,commandCopy + typeSuffixLong + "$-1, -" + offset.toString()
+                    + "(" + basePointerRegister + ")\n");
+            offset -= 4;
+            writeToAsmFile(fw,commandCopy + typeSuffixLong + "$0, -" + offset.toString()
+                    + "(" + basePointerRegister + ")\n");
+            offset -= 4;
+            writeToAsmFile(fw,commandCopy + typeSuffixLong + "$0, -" + offset.toString()
+                    + "(" + basePointerRegister + ")\n");
+
         }
+    }
+
+    public void addElseBody(FileWriter fw, AST ast, IdTable idTable) throws IOException {
+        Integer level = this.levelCounter + 1;
+        String string = commandCmp + typeSuffixByte + "%al, %dl\n" + commandNotEqualityTransition + " " + levelSection + level.toString() + "\n";
+        level = this.levelCounter - 1;
+        String mark = levelSection + level.toString();
+        insertStringToAsmFileBeforeMark(string, mark);
+        addNesting(fw, ast, mark);
+        addAssignment(fw, ast);
+    }
+
+    public void addNesting(FileWriter fw, AST ast, String mark) throws IOException {
+        this.setLevelCounter(this.levelCounter + 2);
+        String string = commandCopy + typeSuffixLong + "-12(" + basePointerRegister + "), " + accumulatorSubRegister + "\n"
+                + commandCopy + typeSuffixLong + accumulatorSubRegister + ", -16(" + basePointerRegister + ")\n";
+        string += operatorAdd(ast);
+        string += commandCmp + typeSuffixLong + "$1, -4(" + basePointerRegister + ")\n"
+                + commandNotEqualityTransition + levelSection + this.getLevelCounter() + "\n"
+                + commandCopy + typeSuffixLong + "-16(" + basePointerRegister + "), " + accumulatorSubRegister + "\n"
+                + commandDifference + typeSuffixLong + "$1, " + accumulatorSubRegister + "\n";
+        this.setLevelCounter(this.levelCounter + 1);
+        Integer level = this.levelCounter - 2;
+        string += commandUnconditionalTransition + levelSection + this.getLevelCounter() + "\n" + levelSection + level.toString() + ":\n";
+        insertStringToAsmFileBeforeMark(string, mark);
+        this.setCurrentLevelMark(levelSection + level);
+
     }
 
     public void addOperation(FileWriter fw, AST ast, IdTable idTable) throws IOException {
         if (ast.getNodeType() == ASTNodeType.OPERATORDIVISION) {
             writeToAsmFile(fw, commandDivision);
-        } else if (ast.getNodeType() == ASTNodeType.OPERATORSUMMING) {
-            writeToAsmFile(fw, commandSumming);
         } else if (ast.getNodeType() == ASTNodeType.OPERATORDIFFERENCE) {
             writeToAsmFile(fw, commandDifference);
         }
+    }
+
+    public void addAssignment(FileWriter fw, AST ast) throws IOException {
+        String string = commandCopy + typeSuffixLong + "$2, -4(" + basePointerRegister + ")\n"
+                + commandCopy + typeSuffixLong + "$-1, -16(" + basePointerRegister + ")\n";
+        Integer level = this.getLevelCounter() - 1;
+        insertStringToAsmFileAfterMark(string + levelSection + level.toString() + ":\n" + commandSumming + typeSuffixLong
+                + "$1, -4(" + basePointerRegister + ")\n", this.getCurrentLevelMark());
     }
 
     public void copyToStack(FileWriter fw, Integer offset, String source, String type, Integer regIndex) throws IOException {
@@ -460,6 +523,11 @@ public class Assembler {
         }
     }
 
+    public String operatorAdd(AST ast) {
+        return commandSumming + typeSuffixLong + "$1, -8(" + basePointerRegister + ")\n"
+                + commandSumming + typeSuffixLong +  "$1, -12(" + basePointerRegister + ")\n";
+    }
+
     public void addConditionForInequalityTransition(FileWriter fw, AST ast, IdTable idTable) throws IOException {
         if (ast.getParent().getNodeType() == ASTNodeType.SENTENCEASSERTPARAM) {
             addAsmAssert(fw, ast);
@@ -484,6 +552,23 @@ public class Assembler {
                     + this.getCurrentLevelMark() + ":\n" + commandSumming + typeSuffixLong + "$1, -4(" + basePointerRegister + ")\n", mark);
             insertStringToAsmFileBeforeMark(string + commandCopy + typeSuffixLong + accumulatorSubRegister + ", -8(" + basePointerRegister + ")\n", this.getCurrentLevelMark());
         }
+    }
+
+    public void takeACharacterFromAString(FileWriter fw, AST ast) throws IOException {
+        if (ast.getParent().getChildren().get(1).equals(ast)) {
+            String string = takeChar(dataRegister, counterRegister, dataSubRegister, 24);
+            string += commandCopy + typeSuffixLong + " -4(" + basePointerRegister + "), " + accumulatorSubRegister + "\n";
+            string += takeChar(counterRegister, accumulatorRegister, accumulatorSubRegister, 32);
+            insertStringToAsmFileAfterMark(commandCopy + typeSuffixLong + "-8(" + basePointerRegister + "), "
+                    + accumulatorSubRegister + "\n" + string, this.getCurrentLevelMark());
+        }
+    }
+
+    public String takeChar(String reg1, String reg2, String reg3, Integer offset) {
+        return commandCopy + "slq " + accumulatorSubRegister + ", " + reg1 + "\n" + commandCopy + typeSuffixQuad + "-" + offset.toString()
+                + "(" + basePointerRegister + "), " + accumulatorRegister + "\n"
+                + commandSumming + typeSuffixQuad + reg1 + ", " + accumulatorRegister + "\n"
+                + commandCopy + "zbl (" + accumulatorRegister + "), " + reg3 + "\n";
     }
 
     public void addConditionForLessTransition(FileWriter fw, AST ast, IdTable idTable) throws IOException {
@@ -567,30 +652,59 @@ public class Assembler {
     }
 
     public void addFor(FileWriter fw, AST ast, IdTable idTable) throws IOException {
-        for (Register reg: registers) {
-            if (reg.getLexeme().startsWith(accumulatorRegister)) {
-                addRegisterToRegisters(RegisterType.EAX, accumulatorSubRegister, reg.getValue(), reg.getNameVariable());
-                break;
+        if (checkParentRound(ast)) {
+            for (Register reg : registers) {
+                if (reg.getLexeme().startsWith(accumulatorRegister)) {
+                    addRegisterToRegisters(RegisterType.EAX, accumulatorSubRegister, reg.getValue(), reg.getNameVariable());
+                    break;
+                }
+            }
+            String string = commandCopy + typeSuffixLong + "(" + accumulatorRegister + "), " + accumulatorSubRegister + "\n"
+                    + commandCopy + typeSuffixLong + accumulatorSubRegister + ", -8(" + basePointerRegister + ")" + "\n"
+                    + commandCopy + typeSuffixLong + "$" + ast.getChildren().get(0).getChildren().get(0).getLexeme()
+                    + ", -4(" + basePointerRegister + ")" + "\n";
+            this.setLevelCounter(this.levelCounter + 1);
+            string += commandUnconditionalTransition + levelSection + this.getLevelCounter().toString() + "\n"
+                    + levelSection + this.getLevelCounter().toString() + ":\n";
+            writeToAsmFile(fw, string);
+            addConditionFor(fw, ast.getChildren().get(1).getChildren().get(0).getLexeme(), 4);
+            writeToAsmFile(fw, commandCopy + typeSuffixLong + "-8(" + basePointerRegister + "), " + accumulatorSubRegister + "\n"
+                    + commandPop + typeSuffixQuad + " " + basePointerRegister + "\n");
+        } else {
+            if (nestingFlag == 0) {
+                this.setLevelCounter(this.levelCounter + 1);
+                writeToAsmFile(fw, commandUnconditionalTransition + levelSection + this.getLevelCounter().toString() + "\n"
+                        + levelSection + this.getLevelCounter().toString() + ":\n");
+                addConditionFor(fw, ast.getChildren().get(1).getChildren().get(0).getLexeme(), 8);
+                writeToAsmFile(fw,commandCopy + typeSuffixLong + "-16(" + basePointerRegister + "), " + accumulatorSubRegister + "\n"
+                        + levelSection + "8:\n" + commandPop + typeSuffixQuad + " " + basePointerRegister + "\n");
+                nestingFlag += 1;
+            } else {
+                this.setLevelCounter(this.levelCounter + 1);
+                String string = commandCopy + typeSuffixLong + "$0, -4(" + basePointerRegister + ")\n"
+                        + commandUnconditionalTransition + levelSection + this.getLevelCounter() + "\n"
+                        + levelSection + this.getLevelCounter() + ":\n";
+                insertStringToAsmFileAfterMark(string, this.getCurrentLevelMark());
+                addConditionFor(fw, ast.getChildren().get(1).getChildren().get(0).getLexeme(), 4);
+                insertStringToAsmFileBeforeMark(commandSumming + typeSuffixLong + "$1, -12(" + basePointerRegister + ")\n"
+                        + commandSumming + typeSuffixLong + "$1, -8(" + basePointerRegister + ")\n", ".L2");
             }
         }
-        String string = commandCopy + typeSuffixLong + "(" + accumulatorRegister + "), " + accumulatorSubRegister + "\n"
-                + commandCopy + typeSuffixLong + accumulatorSubRegister + ", -8(" + basePointerRegister + ")" + "\n"
-                + commandCopy + typeSuffixLong + "$" + ast.getChildren().get(0).getChildren().get(0).getLexeme()
-                + ", -4(" + basePointerRegister + ")" + "\n";
-        this.setLevelCounter(this.levelCounter + 1);
-        string += commandUnconditionalTransition + levelSection + this.getLevelCounter().toString() + "\n"
-                + levelSection + this.getLevelCounter().toString() + ":\n";
-        writeToAsmFile(fw, string);
+    }
+
+    public void addConditionFor(FileWriter fw, String lexeme, Integer offset) throws IOException {
         String mark = levelSection + this.getLevelCounter();
         this.setLevelCounter(this.levelCounter + 1);
-        string = commandCmp + typeSuffixLong + "$" + ast.getChildren().get(1).getChildren().get(0).getLexeme()
-                + ", -4(" + basePointerRegister + ")\n "
-                + commandMoreTransition + levelSection + this.getLevelCounter().toString() + "\n"
-                + commandCopy + typeSuffixLong + "-8(" + basePointerRegister + "), " + accumulatorSubRegister + "\n"
-                + commandPop + typeSuffixQuad + " " + basePointerRegister + "\n";
+        String string = commandCmp + typeSuffixLong + "$" + lexeme
+                + ", -" + offset.toString() + "(" + basePointerRegister + ")\n "
+                + commandMoreTransition + levelSection + this.getLevelCounter().toString() + "\n";
         this.setCurrentLevelMark(levelSection + this.getLevelCounter().toString());
-        writeToAsmFile(fw, string);
+        insertStringToAsmFileAfterMark(string, mark);
         insertStringToAsmFileBeforeMark(this.getCurrentLevelMark() + ":\n", mark);
+    }
+
+    public boolean checkParentRound(AST ast) {
+        return ast.getParent().getParent().getParent().getNodeType() == ASTNodeType.PHRASEFOR;
     }
 
     public void addVariableDefinition(FileWriter fw, AST ast, IdTable idTable) throws IOException {
@@ -663,5 +777,9 @@ public class Assembler {
             System.out.println(in.nextLine());
         }
         fr.close();
+    }
+
+    public String getAsmFileName() {
+        return asmFileAddress;
     }
 }
