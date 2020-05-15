@@ -169,7 +169,8 @@ public class Parser {
                 nextToken.getType() == TokenClass.IF ||
                 nextToken.getType() == TokenClass.FOR ||
                 nextToken.getType() == TokenClass.ID ||
-                nextToken.getType() == TokenClass.RBRACE) {
+                nextToken.getType() == TokenClass.RBRACE ||
+                nextToken.getType() == TokenClass.RETURN) {
             boolean added = addAOpeningTokenToTheAST(ast, parentNode, ASTNodeType.BODY, ASTNodeType.valueOf(currentToken.getType().name()),
                     "body", currentToken.getLexeme(), "PHRASE", pathToTokenParent, currentToken.getString());
             if (!added) {
