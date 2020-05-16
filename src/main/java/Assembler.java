@@ -243,9 +243,11 @@ public class Assembler {
                     Integer count = 0;
                     for (IdDeclarationDescription param: description.getFunctionParam()) {
                         count += param.getCount();
-                        System.out.println(param.getType());
                         if (param.getType() == ASTNodeType.ARRAY) {
                             count += 1;
+                            if (count == 7) {
+                                count -= 1;
+                            }
                         } else if (param.getDataType() == ASTNodeType.STRING) {
                             count += 1;
                         }
@@ -298,6 +300,9 @@ public class Assembler {
                 for (String arrayElement: array) {
                     addRegisterToStack(RegisterType.RBP, basePointerRegister, arrayElement, descriptionParam.getLexeme());
                     this.setStackOffset(this.getStackOffset() + 4);
+                }
+                if (array.length == 6) {
+                    this.setStackOffset(this.getStackOffset() - 4);
                 }
                 return 0;
             }
@@ -423,7 +428,6 @@ public class Assembler {
     public void addFunctionDefinitionParamsToStack(FileWriter fw, AST ast, IdTable idTable) throws IOException {
         Integer offset;
         Integer countNotEmptyRegisters = this.getRegisters().size();
-        System.out.println(registers.get(countNotEmptyRegisters - 1).getType());
         if (this.getRegisters().get(countNotEmptyRegisters - 1).getType() == RegisterType.EDI) {
             copyToStack(fw, 8, destinationIndexSubRegister, typeSuffixLong, countNotEmptyRegisters - 1);
             copyToStack(fw, 4, sourceIndexSubRegister, typeSuffixLong, countNotEmptyRegisters - 2);

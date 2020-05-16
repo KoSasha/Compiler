@@ -16,7 +16,7 @@ public class IdTable {
     @JsonIgnore
     private Character subLevel;
 
-//    @JsonIgnore
+    @JsonIgnore
     private ArrayList<IdDeclarationDescription> idDeclarationDescriptions;
 
     public void formATable(AST ast) {

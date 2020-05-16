@@ -253,6 +253,7 @@ public class Sema {
                 for (IdDeclarationDescription param: description.getFunctionParam()) {
                     if (sentenceParam.getChildren().get(numberOfParam).getNodeType() == ASTNodeType.ID) {
                         log = checkIdParam(sentenceParam.getChildren().get(numberOfParam), param, descriptionLexeme, idTable);
+
                     } else {
                         log = checkVariableParam(sentenceParam.getChildren().get(numberOfParam), param, descriptionLexeme, idTable);
                     }
@@ -283,10 +284,15 @@ public class Sema {
                 if (Integer.parseInt(lv) <= this.getLevel() &&
                         Character.getNumericValue(this.getSubLevel()) <= Character.getNumericValue(subLv.charAt(0))) {
                     if (param.getDataType() == descriptionParam.getDataType()) {
-//                        System.out.println(descriptionLexeme);
                         String paramTypeLexeme = null;
                         if (descriptionParam.getDataType() == ASTNodeType.INT) {
                             paramTypeLexeme = "i32";
+                            if (descriptionParam.getType() == ASTNodeType.ARRAY) {
+                                if (param.getCount() != descriptionParam.getCount()) {
+                                    return  "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: '" + ast.getLexeme() +
+                                            "' количество элементов массива, ожидаемое функцией, не соответствует передаваемому";
+                                }
+                            }
                         } else if (descriptionParam.getDataType() == ASTNodeType.FLOAT) {
                             paramTypeLexeme = "f64";
                         } else if (descriptionParam.getDataType() == ASTNodeType.STRING) {
@@ -330,8 +336,14 @@ public class Sema {
         String descriptionLexeme = null;
         if (ast.getNodeType() == ASTNodeType.INTVARIABLE || ast.getNodeType() == ASTNodeType.SINTVARIABLE ||
                 ast.getNodeType() == ASTNodeType.HEXVARIABLE || ast.getNodeType() == ASTNodeType.OCTALVARIABLE ||
-                ast.getNodeType() == ASTNodeType.BINARYVARIABLE || ast.getNodeType() == ASTNodeType.ARRAY) {
+                ast.getNodeType() == ASTNodeType.BINARYVARIABLE) {
             descriptionLexeme = "i32";
+        } else if (ast.getNodeType() == ASTNodeType.ARRAY) {
+            descriptionLexeme = "i32";
+            String error = checkTypeOfTheArrayElement(ast);
+            if (error != null) {
+                return error;
+            }
         } else if (ast.getNodeType() == ASTNodeType.FLOATVARIABLE) {
             descriptionLexeme = "f64";
         } else if (ast.getNodeType() == ASTNodeType.STRINGVARIABLE) {
@@ -353,6 +365,19 @@ public class Sema {
             }
         }
 
+        return null;
+    }
+
+    public String checkTypeOfTheArrayElement(AST ast) {
+        String[] arrayElements = ast.getLexeme().substring(1, ast.getLexeme().length() - 1).split(", ");
+        for (String element: arrayElements) {
+            try {
+                Integer.parseInt(element);
+            } catch (NumberFormatException e) {
+                return "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: тип элемента массива '" + element +
+                "' не соответствует объявленному";
+            }
+        }
         return null;
     }
 

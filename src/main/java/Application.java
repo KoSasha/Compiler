@@ -6,6 +6,14 @@ public class Application {
 
     public static String inputFileAddress;
 
+    public static String compileFlagAsm;
+
+    public static String compileFlagExe;
+
+    public static String executableFileName;
+
+    public static String assemblerFileName;
+
     public static String asmFileAddress;
 
     public static Parser parser;
@@ -40,6 +48,7 @@ public class Application {
     }
 
     public static void compiler(Scanner in) throws IOException, InterruptedException {
+        cleanFile();
         parser = new Parser();
         ast = new AST(ASTNodeType.PROGRAM, "program", 1, null, null);
         ArrayList<Integer> pathToTokenParent = new ArrayList<>();
@@ -102,31 +111,113 @@ public class Application {
         }
         asmFileAddress = assembler.getAsmFileName();
         asmComlile(asmFileAddress);
+        renameAsmFile();
+        if (compileFlagAsm == null) {
+            deleteAsmFile();
+        }
+    }
+
+    public static void cleanFile() {
+        File asmDirectory = new File("src/main/resources/asm");
+        if (asmDirectory.isDirectory()) {
+            File[] filesInDirectory = asmDirectory.listFiles();
+            for (File file: filesInDirectory) {
+                file.delete();
+            }
+        }
     }
 
     public static void asmComlile(String asmFileAddress) throws IOException {
-        Process proc = Runtime.getRuntime().exec("gcc " + asmFileAddress + " -o src/main/resources/app");
+        Process proc = Runtime.getRuntime().exec("gcc " + asmFileAddress + " -o src/main/resources/" + executableFileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
         String line = "";
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             System.out.print(line + "\n");
         }
     }
 
-    public static void processingArguments(String[] args) throws CommandLineArgumentsException {
-        if (args.length == 2) {
-            option = args[0];
-            inputFileAddress = args[1];
-            if (!option.equals("--dump-tokens") && !option.equals("--dump-ast") && !option.equals("--dump-asm")) {
-                throw new CommandLineArgumentsException();
-            }
-        } else {
-            if (args.length == 1) {
-                inputFileAddress = args[0];
-            } else {
-                throw new CommandLineArgumentsException();
-            }
+    public static void renameAsmFile() {
+        File asmFile = new File(asmFileAddress);
+        File newAsmFile = new File("src/main/resources/asm/" + executableFileName + ".s");
+        if (!asmFile.renameTo(newAsmFile)) {
+            System.out.println("не удалось переименовать файл");
         }
     }
 
+    public static void deleteAsmFile() {
+        File asmFile = new File(asmFileAddress);
+        asmFile.delete();
+    }
+
+    public static void processingArguments(String[] args) throws CommandLineArgumentsException {
+        if (args.length == 1) {
+            inputFileAddress = args[0];
+            getExecutableFileName();
+        } else if (args.length == 2) {
+            if (checkOption(args[0])) {
+                option = args[0];
+                inputFileAddress = args[1];
+                getExecutableFileName();
+            } else if (args[0].equals("-s")) {
+                compileFlagAsm = args[0];
+                inputFileAddress = args[1];
+                getExecutableFileName();
+            } else {
+                throw new CommandLineArgumentsException();
+            }
+        } else if (args.length == 3) {
+            if (checkOption(args[0]) && args[1].equals("-s")) {
+                option = args[0];
+                compileFlagAsm = args[1];
+                inputFileAddress = args[2];
+                getExecutableFileName();
+            } else if (args[1].equals("-o")) {
+                inputFileAddress = args[0];
+                compileFlagExe = args[1];
+                executableFileName = args[2];
+            } else {
+                throw new CommandLineArgumentsException();
+            }
+        } else if (args.length == 4) {
+            if (checkOption(args[0]) && args[2].equals("-o")) {
+                option = args[0];
+                inputFileAddress = args[1];
+                compileFlagExe = args[2];
+                executableFileName = args[3];
+            } else {
+                if (args[0].equals("-s") && args[2].equals("-o")) {
+                    compileFlagAsm = args[0];
+                    inputFileAddress = args[1];
+                    compileFlagAsm = args[2];
+                    executableFileName = args[3];
+                } else {
+                    throw new CommandLineArgumentsException();
+                }
+            }
+        } else if (args.length == 5) {
+            if (checkOption(args[0]) && args[1].equals("-s") && args[3].equals("-o")) {
+                option = args[0];
+                compileFlagAsm = args[1];
+                inputFileAddress = args[2];
+                compileFlagExe = args[3];
+                executableFileName = args[4];
+            } else {
+                throw new CommandLineArgumentsException();
+            }
+        } else {
+            throw new CommandLineArgumentsException();
+        }
+    }
+
+    public static void getExecutableFileName() {
+        String[] path = inputFileAddress.split("/");
+        executableFileName = path[path.length - 1].substring(0, path[path.length - 1].length() - 3);
+    }
+
+    public static boolean checkOption(String arg) throws CommandLineArgumentsException {
+        if (!arg.equals("--dump-tokens") && !arg.equals("--dump-ast") && !arg.equals("--dump-asm")) {
+            return false;
+        }
+        return true;
+    }
 }
