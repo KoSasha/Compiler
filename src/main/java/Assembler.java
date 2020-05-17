@@ -205,7 +205,7 @@ public class Assembler {
                     break;
 
                 case PRINTLNMACRO:
-                    addAsmPrint(fw);
+                    addAsmPrint(fw, idTable);
                     break;
 
                 case RBRACE:
@@ -312,18 +312,20 @@ public class Assembler {
 
     public void addStringToStack(FileWriter fw, IdDeclarationDescription descriptionParam,  String typeSuffix, Integer cnt) throws IOException {
         if (cnt == 1) {
-            writeToAsmFile(fw, stackSmashing + commandCopy + "absq $" + descriptionParam.getValue() + ", " + accumulatorRegister + "\n"
+            System.out.println();
+            insertStringToAsmFileBeforeMark(".LC1:\n\t.string " + descriptionParam.getValue().substring(0, 10) + "\"\n", "\t.text");
+            writeToAsmFile(fw, stackSmashing + commandCopyAddress + "q .LC1(%rip), " + accumulatorRegister + "\n"
                             + commandCopy + typeSuffixQuad + accumulatorRegister + ", -19(" + basePointerRegister + ")\n");
             stackSmashingFlag = 1;
             addRegisterToRegisters(RegisterType.RAX, accumulatorRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
             addRegisterToRegisters(RegisterType.RDI, sourceIndexRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
             addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
         } else {
+            insertStringToAsmFileBeforeMark(".LC2:\n\t.string " + descriptionParam.getValue().substring(0, 2) + "\"\n",
+                    ".LC1:");
             this.setStackOffset(22);
-            writeToAsmFile(fw,commandCopy + typeSuffix + "$" + descriptionParam.getValue() + ", -11(" + basePointerRegister + ")\n"
-                    + commandCopy + typeSuffixByte + "$0, -9(" + basePointerRegister + ")\n "
-                    + commandCopy + typeSuffix + "$" + descriptionParam.getValue() + ", -" + this.getStackOffset() + "(" + basePointerRegister + ")\n"
-                    + commandCopy + typeSuffixByte + "$0, -20(" + basePointerRegister + ")\n"
+            writeToAsmFile(fw,commandCopyAddress + typeSuffixQuad + ".LC2(%rip), " + destinationIndexRegister + "\n"
+                    + commandCopy + typeSuffixQuad + destinationIndexRegister + ", -22(" + basePointerRegister + ")\n "
                     + commandCopyAddress + typeSuffixQuad + "-" + this.getStackOffset() + "(" + basePointerRegister + "), " + dataRegister + "\n"
                     + commandCopyAddress + typeSuffixQuad + "-19(" + basePointerRegister + "), " + accumulatorRegister + "\n"
                     + commandCopy + typeSuffixQuad + dataRegister + ", " + sourceIndexRegister + "\n"
@@ -707,6 +709,17 @@ public class Assembler {
         insertStringToAsmFileBeforeMark(this.getCurrentLevelMark() + ":\n", mark);
     }
 
+    public void checkString(FileWriter fw, IdTable idTable) throws IOException {
+        String str = idTable.getIdDeclarationDescriptions().get(1).getValue();
+        if (idTable.getIdDeclarationDescriptions().get(1).getDataType() == ASTNodeType.STRING) {
+            fw = new FileWriter(asmFileAddress, true);
+            String substr = idTable.getIdDeclarationDescriptions().get(2).getValue();
+            Integer result = str.substring(1, str.length() - 1).indexOf(substr.substring(1, substr.length() - 1));
+            fw.write(commandCopy + typeSuffixLong + "\t$" + result + ", " + accumulatorSubRegister + "\n");
+            fw.close();
+        }
+    }
+
     public boolean checkParentRound(AST ast) {
         return ast.getParent().getParent().getParent().getNodeType() == ASTNodeType.PHRASEFOR;
     }
@@ -767,7 +780,8 @@ public class Assembler {
         file.delete();
     }
 
-    public void addAsmPrint(FileWriter fw) throws IOException {
+    public void addAsmPrint(FileWriter fw, IdTable idTable) throws IOException {
+        checkString(fw, idTable);
         fw = new FileWriter(asmFileAddress, true);
         fw.write(printlnMacro);
         fw.write(printSection);

@@ -9,6 +9,8 @@ public class Sema {
 
     private Character SubLevel;
 
+    public static boolean isNesting = false;
+
     public String analyze(AST ast, IdTable idTable) {
         if (ast != null) {
             String lvl, log;
@@ -56,6 +58,31 @@ public class Sema {
                     System.exit(0);
                 }
                 return log;
+            } else if (ast.getNodeType() == ASTNodeType.IN) {
+                log = this.checkOutOfBounds(ast.getParent().getChildren().get(1), idTable);
+                if (log != null) {
+                    System.out.println(log);
+                    System.exit(0);
+                }
+                return log;
+            }
+        }
+        return null;
+    }
+
+    public String checkOutOfBounds(AST ast, IdTable idTable) {
+        for (IdDeclarationDescription description: idTable.getIdDeclarationDescriptions()) {
+            if (description.getDataType() == ASTNodeType.STRING) {
+                if (!isNesting) {
+                    if (Integer.parseInt(ast.getChildren().get(1).getLexeme()) <= description.getCount() - 3) {
+                        isNesting = true;
+                        return null;
+                    } else {
+                        return "TYPEERROR:<LINE_" + ast.getLine().toString() + ">: выход за границы строки";
+                    }
+                } else {
+                    isNesting = false;
+                }
             }
         }
         return null;
