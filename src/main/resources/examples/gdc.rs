@@ -1,7 +1,10 @@
 fn main() {
-    let num1: i32 = 20;
-    let num2: i32 = 5;
+    let num1: i32 = 11;
+    let num2: i32 = 22;
     let n: i32 = gdc(num1, num2);
+    let y: i32 = 9;
+    let q: i32 = 8;
+    println!("{}", q);
     println!("{}", n);
 
 }
