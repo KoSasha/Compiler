@@ -15,9 +15,13 @@ public class Assembler {
 
     private Integer levelCounter;
 
+    private Integer printLevel;
+
     private String currentFunctionMark;
 
     private String currentLevelMark;
+
+    private Integer offset;
 
     public static String globalLevelSection = ".LFB";
 
@@ -52,9 +56,7 @@ public class Assembler {
 
     public static Integer nestingFlag = 0;
 
-    public static String printlnMacro = "\tmovl\t%eax, %esi\n" +
-            "\tleaq\t.LC0(%rip), %rdi\n" +
-            "\tmovl\t$0, %eax\n" +
+    public static String printlnMacro = "\tmovl\t$0, %eax\n" +
             "\tcall\tprintf@PLT\n" +
             "\tmovl\t$0, %eax\n";
 
@@ -108,7 +110,7 @@ public class Assembler {
 
     public static String commantConvertLongToQuad = "\tcltq\n";
 
-    public static String printSection = ".LC0:\n\t.string\t\"%d\\n\"\n";
+    public static String printSection = ".LC";
 
     public static String accumulatorRegister = "%rax";
 
@@ -205,7 +207,7 @@ public class Assembler {
                     break;
 
                 case PRINTLNMACRO:
-                    addAsmPrint(fw, idTable);
+                    addAsmPrint(ast, fw, idTable);
                     break;
 
                 case RBRACE:
@@ -311,25 +313,25 @@ public class Assembler {
     }
 
     public void addStringToStack(FileWriter fw, IdDeclarationDescription descriptionParam,  String typeSuffix, Integer cnt) throws IOException {
+        this.setPrintLevel(this.printLevel + 1);
         if (cnt == 1) {
-            System.out.println();
-            insertStringToAsmFileBeforeMark(".LC1:\n\t.string " + descriptionParam.getValue().substring(0, 10) + "\"\n", "\t.text");
-            writeToAsmFile(fw, stackSmashing + commandCopyAddress + "q .LC1(%rip), " + accumulatorRegister + "\n"
-                            + commandCopy + typeSuffixQuad + accumulatorRegister + ", -19(" + basePointerRegister + ")\n");
+            writeToAsmFile(fw, stackSmashing + commandCopyAddress + "q .LC" + this.getPrintLevel() + "(%rip), " + accumulatorRegister + "\n"
+                            + commandCopy + typeSuffixQuad + accumulatorRegister + ", -19(" + basePointerRegister + ")\n"
+                    + ".LC" + this.getPrintLevel() + ":\n\t.string " + descriptionParam.getValue().substring(0, 10) + "\"\n");
             stackSmashingFlag = 1;
             addRegisterToRegisters(RegisterType.RAX, accumulatorRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
             addRegisterToRegisters(RegisterType.RDI, sourceIndexRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
             addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
         } else {
-            insertStringToAsmFileBeforeMark(".LC2:\n\t.string " + descriptionParam.getValue().substring(0, 2) + "\"\n",
-                    ".LC1:");
+            Integer upperLevel = this.getPrintLevel() - 1;
             this.setStackOffset(22);
-            writeToAsmFile(fw,commandCopyAddress + typeSuffixQuad + ".LC2(%rip), " + destinationIndexRegister + "\n"
+            insertStringToAsmFileBeforeMark(commandCopyAddress + typeSuffixQuad + ".LC" + this.getPrintLevel() + "(%rip), " + destinationIndexRegister + "\n"
                     + commandCopy + typeSuffixQuad + destinationIndexRegister + ", -22(" + basePointerRegister + ")\n "
                     + commandCopyAddress + typeSuffixQuad + "-" + this.getStackOffset() + "(" + basePointerRegister + "), " + dataRegister + "\n"
                     + commandCopyAddress + typeSuffixQuad + "-19(" + basePointerRegister + "), " + accumulatorRegister + "\n"
                     + commandCopy + typeSuffixQuad + dataRegister + ", " + sourceIndexRegister + "\n"
-                    + commandCopy + typeSuffixQuad + accumulatorRegister + ", " + destinationIndexRegister + "\n");
+                    + commandCopy + typeSuffixQuad + accumulatorRegister + ", " + destinationIndexRegister + "\n"
+                    + ".LC" + this.getPrintLevel() + ":\n\t.string " + descriptionParam.getValue().substring(0, 2) + "\"\n", ".LC");
             addRegisterToStack(RegisterType.RBP, basePointerRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
             addRegisterToRegisters(RegisterType.RSI, sourceIndexRegister, descriptionParam.getValue(), descriptionParam.getLexeme());
         }
@@ -346,18 +348,21 @@ public class Assembler {
         }
         Integer stackSize = this.getStack().size();
         if (off == 0) {
+            offset = 36;
             writeArrayParam(fw, stackSize);
             writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
-            offset = 36;
+            writeToAsmFile(fw, "\tmovl\t%eax, -" + offset.toString() + "(%rbp)\n");
         } else if (off == 1) {
+            offset = 4;
             writeSimpleParam(fw, stackSize, offset, typeSuffix);
             writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
-            offset = 4;
+            writeToAsmFile(fw, "\tmovl\t%eax, -" + offset.toString() + "(%rbp)\n");
         } else {
-            writeToAsmFile(fw, commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n");
+            insertStringToAsmFileBeforeMark(commandFunctionCall + " " + this.getCurrentFunctionMark() + "\n"
+                    + "\tmovl\t%eax, -" + this.getOffset().toString() + "(%rbp)\n", ".LC" + this.getPrintLevel());
             offset = 28;
         }
-        addDataForPrint(fw, offset);
+        this.setOffset(offset);
     }
 
     public void writeArrayParam(FileWriter fw, Integer stackSize) throws IOException {
@@ -456,7 +461,6 @@ public class Assembler {
             offset -= 4;
             writeToAsmFile(fw,commandCopy + typeSuffixLong + "$0, -" + offset.toString()
                     + "(" + basePointerRegister + ")\n");
-
         }
     }
 
@@ -510,9 +514,13 @@ public class Assembler {
         writeToAsmFile(fw,commandCopy + type + " " + source + ", -" + this.getStackOffset()  + "(" + basePointerRegister + ")\n");
     }
 
-    public void addDataForPrint(FileWriter fw, Integer offset) throws IOException {
+    public void addDataForPrint(FileWriter fw) throws IOException {
         fw = new FileWriter(asmFileAddress, true);
-        fw.write("\tmovl\t%eax, -" + offset.toString() + "(%rbp)\n" + "\tmovl\t-" + offset + "(%rbp), %eax\n");
+        if (this.getPrintLevel() != 0) {
+            insertStringToAsmFileBeforeMark("\tmovl\t-" + this.getOffset().toString() + "(%rbp), %eax\n", ".LC");
+        } else {
+            fw.write("\tmovl\t-" + this.getOffset().toString() + "(%rbp), %eax\n");
+        }
         fw.close();
     }
 
@@ -523,7 +531,7 @@ public class Assembler {
                 string = stackFail;
             }
             string += leaveStackFrame + functionReturn;
-            insertStringToAsmFileBeforeMark(string, ".LC0");
+            insertStringToAsmFileBeforeMark(string, ".LC" + this.getPrintLevel());
         } else if (ast.getParent().getNodeType() == ASTNodeType.PHRASEFUNCTIONDEFINITION) {
             writeToAsmFile(fw, functionReturn);
         }
@@ -709,15 +717,30 @@ public class Assembler {
         insertStringToAsmFileBeforeMark(this.getCurrentLevelMark() + ":\n", mark);
     }
 
-    public void checkString(FileWriter fw, IdTable idTable) throws IOException {
-        String str = idTable.getIdDeclarationDescriptions().get(1).getValue();
-        if (idTable.getIdDeclarationDescriptions().get(1).getDataType() == ASTNodeType.STRING) {
-            fw = new FileWriter(asmFileAddress, true);
-            String substr = idTable.getIdDeclarationDescriptions().get(2).getValue();
-            Integer result = str.substring(1, str.length() - 1).indexOf(substr.substring(1, substr.length() - 1));
-            fw.write(commandCopy + typeSuffixLong + "\t$" + result + ", " + accumulatorSubRegister + "\n");
-            fw.close();
+    public String checkString(AST ast, FileWriter fw, IdTable idTable) throws IOException {
+        AST sibling = ast.getParent().getChildren().get(2);
+        if (sibling.getChildren().get(0).getChildren().get(0).getLexeme().contains("{}")) {
+            for (IdDeclarationDescription idDeclaration: idTable.getIdDeclarationDescriptions()) {
+                if (sibling.getChildren().get(2).getChildren().get(0).getLexeme().equals(idDeclaration.getLexeme())
+                        && idDeclaration.getValue() != null && !idDeclaration.getValue().startsWith("expression")) {
+                    if (idDeclaration.getDataType() == ASTNodeType.STRING) {
+                        return sibling.getChildren().get(0).getChildren().get(0).getLexeme().replace("{}", idDeclaration.getValue().substring(1, idDeclaration.getValue().length() - 1));
+                    } else {
+                        String str = idTable.getIdDeclarationDescriptions().get(1).getValue();
+                        if (idTable.getIdDeclarationDescriptions().get(1).getDataType() == ASTNodeType.STRING) {
+                            fw = new FileWriter(asmFileAddress, true);
+                            String substr = idTable.getIdDeclarationDescriptions().get(2).getValue();
+                            Integer result = str.substring(1, str.length() - 1).indexOf(substr.substring(1, substr.length() - 1));
+                            return "\"" + result + "\"";
+                        }
+                        return sibling.getChildren().get(0).getChildren().get(0).getLexeme().replace("{}", idDeclaration.getValue());
+                    }
+                }
+            }
+        } else {
+            return sibling.getChildren().get(0).getChildren().get(0).getLexeme();
         }
+        return null;
     }
 
     public boolean checkParentRound(AST ast) {
@@ -771,6 +794,7 @@ public class Assembler {
             }
             fw.write(str + "\n");
         }
+        in.close();
         fr.close();
         fw.close();
         String address = asmFileAddress;
@@ -780,11 +804,43 @@ public class Assembler {
         file.delete();
     }
 
-    public void addAsmPrint(FileWriter fw, IdTable idTable) throws IOException {
-        checkString(fw, idTable);
+    public void addAsmPrint(AST ast, FileWriter fw, IdTable idTable) throws IOException {
+        String print = checkString(ast, fw, idTable);
+        String stringPrint = "";
         fw = new FileWriter(asmFileAddress, true);
-        fw.write(printlnMacro);
-        fw.write(printSection);
+        Integer upperLevel = this.getPrintLevel();
+        setPrintLevel(this.getPrintLevel() + 1);
+        if (print != null) {
+            Integer size = print.length();
+            print = print.substring(0, size - 1) + "\\n\"";
+            if (this.getPrintLevel() != 0) {
+                insertStringToAsmFileBeforeMark(commandCopyAddress + typeSuffixQuad + printSection + this.getPrintLevel().toString() + "(%rip), %rdi\n"
+                                + printlnMacro, ".LC" + upperLevel.toString());
+                stringPrint += printSection + getPrintLevel().toString() + ":\n\t.string " + print + "\n";
+                insertStringToAsmFileBeforeMark(stringPrint, printSection + upperLevel.toString());
+            } else {
+                fw.write(commandCopyAddress + typeSuffixQuad + printSection + this.getPrintLevel().toString() + "(%rip), %rdi\n");
+                fw.write(printlnMacro);
+                stringPrint += printSection + this.getPrintLevel().toString() + ":\n\t.string " + print + "\n";
+                fw.write(stringPrint);
+            }
+        } else {
+            addDataForPrint(fw);
+            if (this.getPrintLevel() != 0) {
+                insertStringToAsmFileBeforeMark("\tmovl %eax, %esi\n"
+                        + commandCopyAddress + typeSuffixQuad + printSection + this.getPrintLevel().toString() + "(%rip), %rdi\n"
+                        + printlnMacro
+                        + printSection + getPrintLevel().toString() + ":\n\t.string "
+                        + ast.getParent().getChildren().get(2).getChildren().get(0).getChildren().get(0).getLexeme().replace("{}", "%d\\n")
+                        + "\n", ".LC" + upperLevel.toString());
+            } else {
+                fw.write("movl %eax, %esi\n");
+                fw.write(commandCopyAddress + typeSuffixQuad + printSection + this.getPrintLevel().toString() + "(%rip), %rdi\n");
+                fw.write(printlnMacro);
+                fw.write(printSection + getPrintLevel().toString() + ":\n\t.string "
+                        + ast.getParent().getChildren().get(2).getChildren().get(0).getChildren().get(0).getLexeme().replace("{}", "%d\\n") + "\n");
+            }
+        }
         fw.close();
     }
 

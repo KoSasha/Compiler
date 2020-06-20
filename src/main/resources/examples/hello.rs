@@ -1,6 +1,6 @@
 fn main() {
     let s = "popampumoi";
-    let subs = "mp";
+    let subs = "moi";
     let n: i32 = search(s, subs);
     println!("{}", n);
 }

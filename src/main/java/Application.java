@@ -104,7 +104,7 @@ public class Application {
             System.exit(0);
         }
         String annotatedAstJson = ast.toJSON("src/main/resources/annotatedast.json");
-        assembler = new Assembler(new ArrayList<>(), new ArrayList<>(), 8, -1, "main", ".LFB0");
+        assembler = new Assembler(new ArrayList<>(), new ArrayList<>(), 8, -1, -1, "main", ".LFB0", 0);
         assembler.asm(ast, idTable);
         if (option != null && option.equals("--dump-asm")) {
             assembler.printAsmFile();
