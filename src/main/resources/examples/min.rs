@@ -1,8 +1,6 @@
 fn main() {
     let array = [1, 2, 77, -34, -35, 9];
     let min: i32 = min(array);
-    let i: i32 = 2;
-    println!("dfg");
     println!("{}", min);
 }
 

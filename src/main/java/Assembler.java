@@ -315,8 +315,6 @@ public class Assembler {
     public void addStringToStack(FileWriter fw, IdDeclarationDescription descriptionParam,  String typeSuffix, Integer cnt) throws IOException {
         this.setPrintLevel(this.printLevel + 1);
         if (cnt == 1) {
-            System.out.println();
-//            insertStringToAsmFileBeforeMark(".LC" + this.getPrintLevel() + ":\n\t.string " + descriptionParam.getValue().substring(0, 10) + "\"\n", "\t.text");
             writeToAsmFile(fw, stackSmashing + commandCopyAddress + "q .LC" + this.getPrintLevel() + "(%rip), " + accumulatorRegister + "\n"
                             + commandCopy + typeSuffixQuad + accumulatorRegister + ", -19(" + basePointerRegister + ")\n"
                     + ".LC" + this.getPrintLevel() + ":\n\t.string " + descriptionParam.getValue().substring(0, 10) + "\"\n");
@@ -365,9 +363,6 @@ public class Assembler {
             offset = 28;
         }
         this.setOffset(offset);
-//        writeToAsmFile(fw, "\tmovl\t%eax, -" + this.getOffset().toString() + "(%rbp)\n");
-//        fw.write("\tmovl\t%eax, -" + this.getOffset().toString() + "(%rbp)\n");
-//        addDataForPrint(fw, offset);
     }
 
     public void writeArrayParam(FileWriter fw, Integer stackSize) throws IOException {
@@ -736,7 +731,6 @@ public class Assembler {
                             fw = new FileWriter(asmFileAddress, true);
                             String substr = idTable.getIdDeclarationDescriptions().get(2).getValue();
                             Integer result = str.substring(1, str.length() - 1).indexOf(substr.substring(1, substr.length() - 1));
-                            System.out.println(this.getPrintLevel());
                             return "\"" + result + "\"";
                         }
                         return sibling.getChildren().get(0).getChildren().get(0).getLexeme().replace("{}", idDeclaration.getValue());
@@ -833,7 +827,6 @@ public class Assembler {
         } else {
             addDataForPrint(fw);
             if (this.getPrintLevel() != 0) {
-                System.out.println("sd");
                 insertStringToAsmFileBeforeMark("\tmovl %eax, %esi\n"
                         + commandCopyAddress + typeSuffixQuad + printSection + this.getPrintLevel().toString() + "(%rip), %rdi\n"
                         + printlnMacro
